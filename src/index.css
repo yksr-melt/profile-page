@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Hiragino Sans',
+    system-ui, sans-serif;
+
+  --color-accent-50: #fdf2f8;
+  --color-accent-100: #fce7f3;
+  --color-accent-200: #fbcfe8;
+  --color-accent-300: #f9a8d4;
+  --color-accent-400: #f472b6;
+  --color-accent-500: #ec4899;
+  --color-accent-600: #db2777;
+
+  --color-ink-50: #fafafa;
+  --color-ink-100: #f4f4f5;
+  --color-ink-200: #e4e4e7;
+  --color-ink-300: #d4d4d8;
+  --color-ink-400: #a1a1aa;
+  --color-ink-500: #71717a;
+  --color-ink-600: #52525b;
+  --color-ink-700: #3f3f46;
+  --color-ink-800: #27272a;
+  --color-ink-900: #18181b;
+
+  --shadow-soft: 0 8px 30px -8px rgb(0 0 0 / 0.08);
+  --shadow-softer: 0 4px 16px -4px rgb(0 0 0 / 0.06);
+
+  --animate-tooltip-in: tooltip-in 0.12s ease-out;
+  --animate-cell-in: cell-in 0.25s ease-out both;
+
+  @keyframes tooltip-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -4px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+  }
+
+  @keyframes cell-in {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-900 antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    @apply bg-accent-200 text-accent-600;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-200) transparent;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgb(255 255 255 / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

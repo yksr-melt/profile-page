@@ -1,0 +1,80 @@
+{
+  "site": {
+    "name": "ibutya",
+    "role": "Programmer / Student",
+    "pronouns": "he/him",
+    "homeIntro": "プログラミングと音楽が好きなそこらへんの学生。Node.jsに支配されてます。",
+    "aboutText": "プログラミングと音楽が好きなそこらへんの学生。普段はNode.jsをメインに色々なものを作成しています。過去に作ったものはProductタブ、好きな曲はMusicタブにあるのでぜひ見ていってくれると嬉しいです！",
+    "contactEmails": [
+      { "label": "General", "email": "melt@ibutya.com" }
+    ]
+  },
+  "skills": [
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "Python",
+    "LLMs"
+  ],
+  "interests": [
+    { "category": "ゲーム", "icon": "gamepad", "items": ["ブルーアーカイブ", "学園アイドルマスター", "osu!"] },
+    { "category": "音楽", "icon": "music", "items": ["future bass", "future core", "ゲーム音楽", "ボカロ"] },
+    { "category": "アニメ", "icon": "clapperboard", "items": ["ぼっち・ざ・ろっく！", "リコリス・リコイル", "超かぐや姫！"] },
+    { "category": "趣味", "icon": "sparkles", "items": ["プログラミング", "DTM（ちょっとだけ）"] }
+  ],
+  "wantToTry": ["女装", "DJ"],
+  "setup": [
+    {
+      "group": "メイン",
+      "icon": "laptop",
+      "specs": [
+        { "label": "機種", "value": "MacBook Air (2020)" },
+        { "label": "RAM", "value": "8GB" },
+        { "label": "ブラウザ", "value": "Firefox" }
+      ]
+    },
+    {
+      "group": "サーバー",
+      "icon": "server",
+      "specs": [
+        { "label": "機種", "value": "Raspberry Pi 4 Model B" },
+        { "label": "OS", "value": "Debian" }
+      ]
+    }
+  ],
+  "playlists": [
+    {
+      "name": "Spotify",
+      "url": "https://open.spotify.com/playlist/3HEQvBBSYTdUEANUM8pkPh",
+      "embedUrl": "https://open.spotify.com/embed/playlist/3HEQvBBSYTdUEANUM8pkPh?utm_source=generator",
+      "height": 352
+    }
+  ],
+  "projects": [
+    {
+      "id": "meltty",
+      "name": "meltty",
+      "description": "macOS上で複数のターミナル（TTY）とプロセスをリアルタイム監視できるTUI",
+      "tags": ["TypeScript", "TUI"],
+      "status": "active",
+      "github": "https://github.com/yksr-melt/meltty",
+      "emoji": "🧊"
+    },
+    {
+      "id": "melt-bot",
+      "name": "Melt bot",
+      "description": "サーバー運営を支援するDiscord Bot。",
+      "tags": ["Node.js", "discord.js"],
+      "status": "active",
+      "github": "https://github.com/yksr-melt/melt-bot",
+      "emoji": "🤖"
+    }
+  ],
+  "links": [
+    { "name": "GitHub", "handle": "@yksr-melt", "url": "https://github.com/yksr-melt", "icon": "github", "color": "from-neutral-700 to-neutral-500" },
+    { "name": "X", "handle": "@yksr_melt", "url": "https://x.com/yksr_melt", "icon": "x", "color": "from-sky-400 to-blue-400" },
+    { "name": "Discord", "handle": "yksr_melt", "url": "https://discord.com/users/1495715303898742897", "icon": "discord", "color": "from-indigo-400 to-violet-400" },
+    { "name": "osu!", "handle": "ibutya", "url": "https://osu.ppy.sh/users/35323526", "icon": "osu", "color": "from-pink-400 to-rose-400" }
+  ]
+}
