@@ -12,14 +12,16 @@ export function NowPlaying() {
 
   return (
     <div className="flex items-center gap-4 rounded-3xl border border-ink-200/60 bg-white p-4 shadow-softer">
-      <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 to-accent-500 text-white shadow-soft">
-        {loading ? (
-          <div className="h-full w-full animate-pulse bg-white/20" />
-        ) : imageUrl ? (
-          <img src={imageUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <Music4 size={26} />
-        )}
+      <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-300 to-accent-500 text-white shadow-soft">
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl">
+          {loading ? (
+            <div className="h-full w-full animate-pulse bg-white/20" />
+          ) : imageUrl ? (
+            <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <Music4 size={26} />
+          )}
+        </div>
         {playing?.isPlaying && (
           <div className="absolute -right-1.5 -bottom-1.5 flex h-6 items-end gap-[2px] rounded-full bg-white px-1.5 py-1 shadow-softer">
             {[0, 1, 2].map((i) => (
