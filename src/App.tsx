@@ -7,9 +7,13 @@ import { Music } from './pages/Music'
 import { Me } from './pages/Me'
 import { Links } from './pages/Links'
 import { useGithubSummary } from './hooks/useGithubSummary'
+import { useLastfmDashboard } from './hooks/useLastfmDashboard'
 import { useDynamicFavicon } from './hooks/useDynamicFavicon'
 import { useAppReady } from './hooks/useAppReady'
 import { TAB_ORDER, type Tab } from './types'
+
+// If the APIs are slow/unreachable, don't leave the splash up forever.
+const DATA_WAIT_TIMEOUT_MS = 6000
 
 const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>> = {
   product: Product,
@@ -22,9 +26,19 @@ const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>
 function App() {
   const [tab, setTab] = useState<Tab>('home')
   const prevIndex = useRef(TAB_ORDER.indexOf('home'))
-  const { data: github } = useGithubSummary()
+  const { data: github, loading: githubLoading } = useGithubSummary()
+  const { loading: lastfmLoading } = useLastfmDashboard()
   useDynamicFavicon(github?.profile.avatarUrl)
-  const appReady = useAppReady()
+  const fontsReady = useAppReady()
+
+  const [dataTimedOut, setDataTimedOut] = useState(false)
+  useEffect(() => {
+    const timeout = setTimeout(() => setDataTimedOut(true), DATA_WAIT_TIMEOUT_MS)
+    return () => clearTimeout(timeout)
+  }, [])
+
+  const dataReady = (!githubLoading && !lastfmLoading) || dataTimedOut
+  const appReady = fontsReady && dataReady
 
   useEffect(() => {
     if (!appReady) return

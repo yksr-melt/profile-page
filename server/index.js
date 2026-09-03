@@ -173,7 +173,7 @@ app.get('/api/github/summary', async (req, res) => {
   }
 
   try {
-    res.json(await cached('github:summary', 5 * 60 * 1000, fetchGithubSummary))
+    res.json(await cached('github:summary', 15 * 60 * 1000, fetchGithubSummary))
   } catch (err) {
     res.status(500).json({ error: 'Failed to reach GitHub', detail: String(err) })
   }
@@ -217,7 +217,7 @@ app.get('/api/github/repos', async (req, res) => {
   }
 
   try {
-    res.json(await cached('github:repos', 5 * 60 * 1000, fetchGithubRepos))
+    res.json(await cached('github:repos', 15 * 60 * 1000, fetchGithubRepos))
   } catch (err) {
     res.status(500).json({ error: 'Failed to reach GitHub', detail: String(err) })
   }
@@ -318,7 +318,7 @@ app.get('/api/lastfm/dashboard', async (req, res) => {
   }
 
   try {
-    res.json(await cached('lastfm:dashboard', 60 * 1000, fetchLastfmDashboard))
+    res.json(await cached('lastfm:dashboard', 2 * 60 * 1000, fetchLastfmDashboard))
   } catch (err) {
     res.status(500).json({ error: 'Failed to reach Last.fm', detail: String(err) })
   }
