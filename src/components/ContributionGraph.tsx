@@ -62,19 +62,26 @@ export function ContributionGraph() {
 
       {data && (
         <div ref={scrollRef} className="flex gap-[3px] overflow-x-auto no-scrollbar">
-          {data.weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
-              {week.map((day, di) => (
-                <span
-                  key={di}
-                  style={{ animationDelay: `${wi * 6 + di * 4}ms` }}
-                  onMouseEnter={(e) => setHover({ rect: e.currentTarget.getBoundingClientRect(), day })}
-                  onMouseLeave={() => setHover(null)}
-                  className={`h-2.5 w-2.5 animate-cell-in rounded-[3px] ${levelColor[day.level]}`}
-                />
-              ))}
-            </div>
-          ))}
+          {data.weeks.map((week, wi) => {
+            // The graph opens scrolled to the most recent week, so stagger the
+            // entrance from the right (visible) edge instead of from the start —
+            // otherwise the on-screen cells sit blank until their (irrelevant)
+            // left-to-right delay elapses, which reads as the view sliding in.
+            const distanceFromEnd = data.weeks.length - 1 - wi
+            return (
+              <div key={wi} className="flex flex-col gap-[3px]">
+                {week.map((day, di) => (
+                  <span
+                    key={di}
+                    style={{ animationDelay: `${distanceFromEnd * 6 + di * 4}ms` }}
+                    onMouseEnter={(e) => setHover({ rect: e.currentTarget.getBoundingClientRect(), day })}
+                    onMouseLeave={() => setHover(null)}
+                    className={`h-2.5 w-2.5 animate-cell-in rounded-[3px] ${levelColor[day.level]}`}
+                  />
+                ))}
+              </div>
+            )
+          })}
         </div>
       )}
 
