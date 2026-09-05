@@ -22,7 +22,7 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
 
 export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   const featured = projects.find((p) => p.featured) ?? projects[0]
-  const { data: github, loading: githubLoading } = useGithubSummary()
+  const { data: github } = useGithubSummary()
   const { data: lastfm } = useLastfmDashboard()
   const visits = useVisitCounter()
 
@@ -36,13 +36,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
       >
         <div className="mb-4 flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[22px] bg-gradient-to-br from-accent-300 via-accent-400 to-accent-500 text-2xl font-black text-white shadow-soft">
-            {githubLoading ? (
-              <div className="h-full w-full animate-pulse bg-white/20" />
-            ) : github?.profile.avatarUrl ? (
-              <img src={github.profile.avatarUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              'い'
-            )}
+            <img src="/avatar.jpg" alt="" className="h-full w-full object-cover" />
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-ink-900">

@@ -24,6 +24,14 @@
     { "category": "趣味", "icon": "sparkles", "items": ["プログラミング", "DTM（ちょっとだけ）"] }
   ],
   "wantToTry": ["女装", "DJ"],
+  "achievements": [
+    {
+      "title": "Homebrew (brew.sh) 日本語訳",
+      "description": "パッケージマネージャー Homebrew の公式サイトの日本語訳を担当。",
+      "url": "https://brew.sh/ja/",
+      "emoji": "🍺"
+    }
+  ],
   "setup": [
     {
       "group": "メイン",

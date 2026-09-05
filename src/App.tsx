@@ -8,7 +8,6 @@ import { Me } from './pages/Me'
 import { Links } from './pages/Links'
 import { useGithubSummary } from './hooks/useGithubSummary'
 import { useLastfmDashboard } from './hooks/useLastfmDashboard'
-import { useDynamicFavicon } from './hooks/useDynamicFavicon'
 import { useAppReady } from './hooks/useAppReady'
 import { TAB_ORDER, type Tab } from './types'
 
@@ -26,9 +25,8 @@ const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>
 function App() {
   const [tab, setTab] = useState<Tab>('home')
   const prevIndex = useRef(TAB_ORDER.indexOf('home'))
-  const { data: github, loading: githubLoading } = useGithubSummary()
+  const { loading: githubLoading } = useGithubSummary()
   const { loading: lastfmLoading } = useLastfmDashboard()
-  useDynamicFavicon(github?.profile.avatarUrl)
   const fontsReady = useAppReady()
 
   const [dataTimedOut, setDataTimedOut] = useState(false)

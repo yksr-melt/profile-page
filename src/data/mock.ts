@@ -45,12 +45,20 @@ export type SetupGroup = {
   specs: { label: string; value: string }[]
 }
 
+export type Achievement = {
+  title: string
+  description: string
+  url?: string
+  emoji: string
+}
+
 export const site = config.site
 export const skills = config.skills
 export const playlists = config.playlists as Playlist[]
 export const projects = config.projects as Project[]
 export const interests = config.interests as InterestGroup[]
 export const wantToTry = config.wantToTry
+export const achievements = config.achievements as Achievement[]
 export const setup = config.setup as SetupGroup[]
 export const contactEmails = site.contactEmails
 
