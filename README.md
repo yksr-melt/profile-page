@@ -1,6 +1,6 @@
 # profile-page
 
-いぶちゃの個人ポータルサイト。React + TypeScript + Tailwind CSS のSPAフロントエンドと、GitHub/Last.fmの実データを取得するExpressバックエンドで構成。
+ゆきしろの個人ポータルサイト。React + TypeScript + Tailwind CSS のSPAフロントエンドと、GitHub/Last.fmの実データを取得するExpressバックエンドで構成。
 
 ## 構成
 
