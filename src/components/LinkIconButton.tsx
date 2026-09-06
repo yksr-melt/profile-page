@@ -39,7 +39,7 @@ export function LinkIconButton({
       {rect &&
         createPortal(
           <div
-            className="pointer-events-none fixed z-50 -translate-x-1/2 animate-tooltip-in whitespace-nowrap rounded-xl bg-ink-900 px-3 py-1.5 text-center shadow-soft"
+            className="pointer-events-none fixed z-50 animate-tooltip-in whitespace-nowrap rounded-xl bg-ink-900 px-3 py-1.5 text-center shadow-soft"
             style={{ left: rect.left + rect.width / 2, top: rect.bottom + 8 }}
           >
             <p className="text-xs font-bold text-white">{name}</p>

@@ -88,7 +88,7 @@ export function ContributionGraph() {
       {hover &&
         createPortal(
           <div
-            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+8px)] animate-tooltip-in whitespace-nowrap rounded-xl bg-ink-900 px-3 py-1.5 text-center shadow-soft"
+            className="pointer-events-none fixed z-50 animate-tooltip-in-above whitespace-nowrap rounded-xl bg-ink-900 px-3 py-1.5 text-center shadow-soft"
             style={{ left: hover.rect.left + hover.rect.width / 2, top: hover.rect.top }}
           >
             <p className="text-xs font-bold text-white">{hover.day.count} contributions</p>

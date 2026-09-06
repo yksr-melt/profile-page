@@ -26,7 +26,8 @@
   --shadow-soft: 0 8px 30px -8px rgb(0 0 0 / 0.08);
   --shadow-softer: 0 4px 16px -4px rgb(0 0 0 / 0.06);
 
-  --animate-tooltip-in: tooltip-in 0.12s ease-out;
+  --animate-tooltip-in: tooltip-in 0.12s ease-out forwards;
+  --animate-tooltip-in-above: tooltip-in-above 0.12s ease-out forwards;
   --animate-cell-in: cell-in 0.25s ease-out both;
 
   @keyframes tooltip-in {
@@ -37,6 +38,23 @@
     to {
       opacity: 1;
       transform: translate(-50%, 0) scale(1);
+    }
+  }
+
+  /* Same entrance as tooltip-in, but anchored above the trigger. The end
+     transform must match the tooltip's resting position exactly (including
+     the -translate-x/y that used to live on the element as separate Tailwind
+     utility classes) — otherwise the plain "transform" animation overrides
+     those utilities for its 0.12s, then snaps to them the instant it ends,
+     which reads as the tooltip jumping right after it appears. */
+  @keyframes tooltip-in-above {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-100% - 8px + 4px)) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, calc(-100% - 8px)) scale(1);
     }
   }
 

@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import { ExternalLink, Star } from 'lucide-react'
+import { ExternalLink, Star, Award } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo } from '../components/BrandIcons'
 import { useGithubRepos } from '../hooks/useGithubRepos'
-import { projects } from '../data/mock'
+import { projects, achievements } from '../data/mock'
 
 const statusLabel: Record<string, string> = {
   active: '運用中',
@@ -39,6 +39,39 @@ export function Product() {
         title="作ったもの"
         description="いままでに作ってきたもの。"
       />
+
+      <div className="mb-8 rounded-3xl border border-ink-200/60 bg-white p-5 shadow-softer">
+        <div className="mb-3 flex items-center gap-1.5">
+          <Award size={15} className="text-accent-400" />
+          <h3 className="text-sm font-black text-ink-900">実績</h3>
+        </div>
+        <div className="flex flex-col gap-2">
+          {achievements.map((a) => {
+            const content = (
+              <>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-50 text-lg shadow-softer">
+                  {a.emoji}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-ink-800">{a.title}</p>
+                  <p className="text-xs text-ink-400">{a.description}</p>
+                </div>
+              </>
+            )
+            const className =
+              'flex items-center gap-3 rounded-2xl bg-ink-50 px-4 py-3 transition active:scale-[0.98]'
+            return a.url ? (
+              <a key={a.title} href={a.url} target="_blank" rel="noreferrer" className={className}>
+                {content}
+              </a>
+            ) : (
+              <div key={a.title} className={className}>
+                {content}
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {projects.map((p, i) => (

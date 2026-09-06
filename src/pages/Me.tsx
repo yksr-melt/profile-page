@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Mail, Sparkles, Gamepad2, Music, Clapperboard, Laptop, Server, Rocket, Award } from 'lucide-react'
+import { Mail, Sparkles, Gamepad2, Music, Clapperboard, Laptop, Server, Rocket } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useGithubSummary } from '../hooks/useGithubSummary'
 import {
@@ -8,7 +8,6 @@ import {
   interests,
   setup,
   wantToTry,
-  achievements,
   contactEmails,
   type InterestIcon,
   type SetupIcon,
@@ -114,35 +113,6 @@ export function Me() {
               {item}
             </span>
           ))}
-        </div>
-      </Card>
-
-      <Card title="実績" delay={0.15} icon={<Award size={15} className="text-accent-400" />}>
-        <div className="flex flex-col gap-2">
-          {achievements.map((a) => {
-            const content = (
-              <>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-softer">
-                  {a.emoji}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-ink-800">{a.title}</p>
-                  <p className="text-xs text-ink-400">{a.description}</p>
-                </div>
-              </>
-            )
-            const className =
-              'flex items-center gap-3 rounded-2xl bg-ink-50 px-4 py-3 transition active:scale-[0.98]'
-            return a.url ? (
-              <a key={a.title} href={a.url} target="_blank" rel="noreferrer" className={className}>
-                {content}
-              </a>
-            ) : (
-              <div key={a.title} className={className}>
-                {content}
-              </div>
-            )
-          })}
         </div>
       </Card>
 
