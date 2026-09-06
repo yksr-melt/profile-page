@@ -4,7 +4,7 @@
     "role": "Programmer / Student",
     "pronouns": "he/him",
     "homeIntro": "プログラミングと音楽が好きなそこらへんの学生。Node.jsに支配されてます。",
-    "aboutText": "プログラミングと音楽が好きなそこらへんの学生。普段はNode.jsをメインに色々なものを作成しています。過去に作ったものはProductタブ、好きな曲はMusicタブにあるのでぜひ見ていってくれると嬉しいです！",
+    "aboutText": "プログラミングと音楽が好きな学生です。最近は色々なジャンルの音楽を聴き漁りながら、自分のための小さなツールやBotをNode.js/TypeScriptで作るのに夢中になっています。好奇心旺盛で気になったことにはすぐ手を出す一方、いざ作り始めると細部まで詰めたくなる完璧主義な一面もあり、基本的には自分のペースでこつこつ進めるタイプです。",
     "contactEmails": [
       { "label": "General", "email": "melt@ibutya.com" }
     ]
