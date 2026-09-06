@@ -11,7 +11,7 @@
     "server": "node --watch server/index.js",
     "start": "node scripts/start.js",
     "dev:all": "npm run start",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/cache-bust-og-image.js",
     "lint": "oxlint",
     "preview": "vite preview"
   },
