@@ -118,7 +118,7 @@ export function Me() {
         </div>
       </Card>
 
-      <Card title="今プレイ中のゲーム" delay={0.13} icon={<Gamepad2 size={15} className="text-accent-400" />}>
+      <Card title="今遊んでいるゲーム" delay={0.13} icon={<Gamepad2 size={15} className="text-accent-400" />}>
         <div className="flex flex-col gap-1.5">
           {currentGames.map((g) => (
             <div
