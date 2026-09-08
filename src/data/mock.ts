@@ -65,6 +65,7 @@ export const interests = config.interests as InterestGroup[]
 export const wantToTry = config.wantToTry
 export const achievements = config.achievements as Achievement[]
 export const currentGames = config.currentGames as CurrentGame[]
+export const specialSkills = config.specialSkills
 export const setup = config.setup as SetupGroup[]
 export const contactEmails = site.contactEmails
 

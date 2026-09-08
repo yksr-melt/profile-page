@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Mail, Sparkles, Gamepad2, Music, Clapperboard, Laptop, Server, Rocket } from 'lucide-react'
+import { Mail, Sparkles, Gamepad2, Music, Clapperboard, Laptop, Server, Rocket, Zap } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useGithubSummary } from '../hooks/useGithubSummary'
 import {
@@ -9,6 +9,7 @@ import {
   setup,
   wantToTry,
   currentGames,
+  specialSkills,
   contactEmails,
   type InterestIcon,
   type SetupIcon,
@@ -74,6 +75,19 @@ export function Me() {
             >
               {s}
             </motion.span>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="特技" delay={0.11} icon={<Zap size={15} className="text-accent-400" />}>
+        <div className="flex flex-wrap gap-2">
+          {specialSkills.map((s) => (
+            <span
+              key={s}
+              className="rounded-full bg-ink-50 px-3 py-1.5 text-xs font-bold text-ink-700"
+            >
+              {s}
+            </span>
           ))}
         </div>
       </Card>
