@@ -18,10 +18,17 @@
     "LLMs"
   ],
   "interests": [
-    { "category": "ゲーム", "icon": "gamepad", "items": ["ブルーアーカイブ", "学園アイドルマスター", "osu!"] },
+    { "category": "ゲーム", "icon": "gamepad", "items": ["osu!"] },
     { "category": "音楽", "icon": "music", "items": ["future bass", "future core", "ゲーム音楽", "ボカロ"] },
     { "category": "アニメ", "icon": "clapperboard", "items": ["ぼっち・ざ・ろっく！", "リコリス・リコイル", "超かぐや姫！"] },
     { "category": "趣味", "icon": "sparkles", "items": ["プログラミング", "DTM（ちょっとだけ）"] }
+  ],
+  "currentGames": [
+    { "name": "雀魂", "since": "2023〜" },
+    { "name": "Revolution Idle", "since": "2025〜" },
+    { "name": "tetrio", "since": "2025〜" },
+    { "name": "ブルアカ", "since": "2025.11.07〜" },
+    { "name": "学マス", "since": "2026.08.16〜" }
   ],
   "wantToTry": ["女装", "DJ"],
   "achievements": [

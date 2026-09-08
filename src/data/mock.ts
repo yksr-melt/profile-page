@@ -52,6 +52,11 @@ export type Achievement = {
   emoji: string
 }
 
+export type CurrentGame = {
+  name: string
+  since: string
+}
+
 export const site = config.site
 export const skills = config.skills
 export const playlists = config.playlists as Playlist[]
@@ -59,6 +64,7 @@ export const projects = config.projects as Project[]
 export const interests = config.interests as InterestGroup[]
 export const wantToTry = config.wantToTry
 export const achievements = config.achievements as Achievement[]
+export const currentGames = config.currentGames as CurrentGame[]
 export const setup = config.setup as SetupGroup[]
 export const contactEmails = site.contactEmails
 

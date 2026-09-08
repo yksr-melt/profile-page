@@ -8,6 +8,7 @@ import {
   interests,
   setup,
   wantToTry,
+  currentGames,
   contactEmails,
   type InterestIcon,
   type SetupIcon,
@@ -100,6 +101,20 @@ export function Me() {
               </div>
             )
           })}
+        </div>
+      </Card>
+
+      <Card title="今プレイ中のゲーム" delay={0.13} icon={<Gamepad2 size={15} className="text-accent-400" />}>
+        <div className="flex flex-col gap-1.5">
+          {currentGames.map((g) => (
+            <div
+              key={g.name}
+              className="flex items-center justify-between rounded-2xl bg-ink-50 px-4 py-2.5 text-sm"
+            >
+              <span className="font-bold text-ink-700">{g.name}</span>
+              <span className="text-xs font-medium text-ink-400">{g.since}</span>
+            </div>
+          ))}
         </div>
       </Card>
 
