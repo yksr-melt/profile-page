@@ -63,6 +63,7 @@ export function Music() {
                 title={track?.title}
                 subtitle={track?.artist}
                 image={track?.image}
+                shape="square"
               />
             )
           })}
@@ -150,12 +151,14 @@ function Row({
   subtitle,
   trailing,
   image,
+  shape = 'circle',
 }: {
   index: number
   title?: string
   subtitle?: string
   trailing?: string
   image?: string
+  shape?: 'circle' | 'square'
 }) {
   return (
     <motion.div
@@ -167,8 +170,16 @@ function Row({
     >
       <span className="w-4 text-xs font-bold text-ink-300">{index + 1}</span>
       {image !== undefined && (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-accent-300 to-accent-500 text-xs font-black text-white">
-          {image ? <img src={image} alt="" className="h-full w-full object-cover" /> : title?.[0]}
+        <div
+          className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-accent-300 to-accent-500 text-xs font-black text-white ${
+            shape === 'square' ? 'rounded-lg' : 'rounded-full'
+          }`}
+        >
+          {image ? (
+            <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
+          ) : (
+            title?.[0]
+          )}
         </div>
       )}
       <div className="min-w-0 flex-1">

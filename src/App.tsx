@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
-import { Product } from './pages/Product'
-import { Music } from './pages/Music'
-import { Me } from './pages/Me'
-import { Links } from './pages/Links'
 import { useGithubSummary } from './hooks/useGithubSummary'
 import { useLastfmDashboard } from './hooks/useLastfmDashboard'
 import { useAppReady } from './hooks/useAppReady'
 import { TAB_ORDER, type Tab } from './types'
+
+// Home is the landing tab, so it loads eagerly with the rest of the app.
+// The other tabs only matter once the user navigates to them, so they're
+// split into their own chunks and fetched on demand.
+const Product = lazy(() => import('./pages/Product').then((m) => ({ default: m.Product })))
+const Music = lazy(() => import('./pages/Music').then((m) => ({ default: m.Music })))
+const Me = lazy(() => import('./pages/Me').then((m) => ({ default: m.Me })))
+const Links = lazy(() => import('./pages/Links').then((m) => ({ default: m.Links })))
 
 // If the APIs are slow/unreachable, don't leave the splash up forever.
 const DATA_WAIT_TIMEOUT_MS = 6000
@@ -71,7 +75,9 @@ function App() {
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className="min-h-dvh pb-32"
         >
-          <Page onNavigate={handleChange} />
+          <Suspense fallback={null}>
+            <Page onNavigate={handleChange} />
+          </Suspense>
         </motion.main>
       </AnimatePresence>
 

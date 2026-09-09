@@ -237,7 +237,9 @@ async function fetchDeezerArtistImage(name) {
     const url = `https://api.deezer.com/search/artist?q=${encodeURIComponent(name)}&limit=1`
     const res = await fetch(url)
     const json = await res.json()
-    const image = res.ok ? json.data?.[0]?.picture_medium ?? '' : ''
+    // Displayed at 36px in the UI — the small (56px) variant is plenty for 2x
+    // displays and much lighter than the medium/big/xl ones.
+    const image = res.ok ? json.data?.[0]?.picture_small ?? '' : ''
     deezerImageCache.set(name, image)
     return image
   } catch {
@@ -298,7 +300,8 @@ async function fetchLastfmDashboard() {
     .map((t) => ({
       title: t.name,
       artist: t.artist?.name ?? t.artist?.['#text'],
-      image: cleanLastfmImage(t.image?.[2]?.['#text']),
+      // Displayed at 36px in the Recently Played list — medium (64px) is enough.
+      image: cleanLastfmImage(t.image?.[1]?.['#text']),
     }))
 
   const nowPlaying = nowPlayingTrack
