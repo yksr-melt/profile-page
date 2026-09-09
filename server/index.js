@@ -223,6 +223,29 @@ app.get('/api/github/repos', async (req, res) => {
   }
 })
 
+// ---------- Deezer (artist images) ----------
+// Last.fm stopped returning real artist photos years ago (every artist comes
+// back with the same placeholder image), so real artwork for the Top Artists
+// list has to come from elsewhere. Deezer's search API is public, needs no
+// key, and reliably has artist photos.
+const deezerImageCache = new Map()
+
+async function fetchDeezerArtistImage(name) {
+  if (deezerImageCache.has(name)) return deezerImageCache.get(name)
+
+  try {
+    const url = `https://api.deezer.com/search/artist?q=${encodeURIComponent(name)}&limit=1`
+    const res = await fetch(url)
+    const json = await res.json()
+    const image = res.ok ? json.data?.[0]?.picture_medium ?? '' : ''
+    deezerImageCache.set(name, image)
+    return image
+  } catch {
+    deezerImageCache.set(name, '')
+    return ''
+  }
+}
+
 // ---------- Last.fm ----------
 
 const LASTFM_BASE = 'https://ws.audioscrobbler.com/2.0/'
@@ -288,11 +311,16 @@ async function fetchLastfmDashboard() {
       }
     : null
 
-  const topArtists = (topArtistsData.topartists?.artist ?? []).map((a) => ({
-    name: a.name,
-    plays: Number(a.playcount),
-    image: cleanLastfmImage(a.image?.[2]?.['#text']),
-  }))
+  const topArtists = await Promise.all(
+    (topArtistsData.topartists?.artist ?? []).map(async (a) => {
+      const image = cleanLastfmImage(a.image?.[2]?.['#text']) || (await fetchDeezerArtistImage(a.name))
+      return {
+        name: a.name,
+        plays: Number(a.playcount),
+        image,
+      }
+    }),
+  )
 
   const topTracks = (topTracksData.toptracks?.track ?? []).map((t) => ({
     title: t.name,
