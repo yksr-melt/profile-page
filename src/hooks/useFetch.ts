@@ -14,23 +14,11 @@ type FetchState<T> = {
 const cache = new Map<string, { data: unknown; error: string | null }>()
 const inFlight = new Map<string, Promise<unknown>>()
 
-// index.html fires these requests in an inline <script>, before the JS
-// bundle has even been parsed, so the network round-trip overlaps with
-// bundle download/parse/execute instead of starting after it.
-declare global {
-  interface Window {
-    __preload?: Record<string, Promise<Response>>
-  }
-}
-
 function load(url: string): Promise<unknown> {
   const pending = inFlight.get(url)
   if (pending) return pending
 
-  const preloaded = window.__preload?.[url]
-  if (preloaded) delete window.__preload![url]
-
-  const promise = (preloaded ?? fetch(url))
+  const promise = fetch(url)
     .then(async (res) => {
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
