@@ -8,22 +8,27 @@
     <!-- The avatar is the LCP candidate on Home/Me; fetch it immediately
          instead of waiting on JS to mount and request it. -->
     <link rel="preload" as="image" href="/avatar.jpg" />
-    <script>
-      // The app waits on these two responses before revealing itself (see
-      // useAppReady/App.tsx). Firing them here means the network round-trip
-      // overlaps with the JS bundle downloading/parsing/executing instead of
-      // only starting once React has mounted and run its effects.
-      window.__preload = {
-        '/api/github/summary': fetch('/api/github/summary'),
-        '/api/lastfm/dashboard': fetch('/api/lastfm/dashboard'),
-      }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // The app waits on these two responses before revealing itself (see
+      // useAppReady/App.tsx). Firing them here means the network round-trip
+      // overlaps with the JS bundle downloading/parsing/executing instead of
+      // only starting once React has mounted and run its effects.
+      // priority: 'low' keeps them from competing for bandwidth with the
+      // resources that actually paint (JS/CSS/fonts/avatar) on constrained
+      // connections — Chrome ignores the option where it isn't supported.
+      // Placed after those resource hints so the preload scanner discovers
+      // them first.
+      window.__preload = {
+        '/api/github/summary': fetch('/api/github/summary', { priority: 'low' }),
+        '/api/lastfm/dashboard': fetch('/api/lastfm/dashboard', { priority: 'low' }),
+      }
+    </script>
     <title>Yukishiro's profile</title>
     <meta name="description" content="ゆきしろについて。各種SNSリンクや過去の創作物等を置いています。" />
 
