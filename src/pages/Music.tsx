@@ -54,14 +54,18 @@ export function Music() {
           {data?.recent.length === 0 && !loading && (
             <p className="text-xs text-ink-400">再生履歴がありません</p>
           )}
-          {(data?.recent ?? (loading ? Array.from({ length: 5 }) : [])).map((t, i) => (
-            <Row
-              key={i}
-              index={i}
-              title={(t as { title?: string })?.title}
-              subtitle={(t as { artist?: string })?.artist}
-            />
-          ))}
+          {(data?.recent ?? (loading ? Array.from({ length: 5 }) : [])).map((t, i) => {
+            const track = t as { title?: string; artist?: string; image?: string } | undefined
+            return (
+              <Row
+                key={i}
+                index={i}
+                title={track?.title}
+                subtitle={track?.artist}
+                image={track?.image}
+              />
+            )
+          })}
         </div>
       </Section>
 
