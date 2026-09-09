@@ -8,6 +8,16 @@
     <!-- The avatar is the LCP candidate on Home/Me; fetch it immediately
          instead of waiting on JS to mount and request it. -->
     <link rel="preload" as="image" href="/avatar.jpg" />
+    <script>
+      // The app waits on these two responses before revealing itself (see
+      // useAppReady/App.tsx). Firing them here means the network round-trip
+      // overlaps with the JS bundle downloading/parsing/executing instead of
+      // only starting once React has mounted and run its effects.
+      window.__preload = {
+        '/api/github/summary': fetch('/api/github/summary'),
+        '/api/lastfm/dashboard': fetch('/api/lastfm/dashboard'),
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
