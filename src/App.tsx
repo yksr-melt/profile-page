@@ -51,6 +51,26 @@ function App() {
     return () => clearTimeout(timeout)
   }, [appReady])
 
+  // Once the app is up, use idle time to fetch the other tabs' chunks in the
+  // background. Keeps the initial bundle small (they're still code-split)
+  // while avoiding a chunk-download-and-parse stall the first time someone
+  // taps a tab — which shows up as a bad INP on slower devices.
+  useEffect(() => {
+    if (!appReady) return
+    const prefetch = () => {
+      import('./pages/Product')
+      import('./pages/Music')
+      import('./pages/Me')
+      import('./pages/Links')
+    }
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(prefetch)
+      return () => cancelIdleCallback(id)
+    }
+    const timeout = setTimeout(prefetch, 1000)
+    return () => clearTimeout(timeout)
+  }, [appReady])
+
   const index = TAB_ORDER.indexOf(tab)
   const direction = index > prevIndex.current ? 1 : index < prevIndex.current ? -1 : 0
 
