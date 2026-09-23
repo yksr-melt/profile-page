@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { Music4 } from 'lucide-react'
 import { useLastfmDashboard } from '../hooks/useLastfmDashboard'
+import { useLang } from '../i18n'
 
 export function NowPlaying() {
   const { data, loading, error } = useLastfmDashboard()
+  const { t } = useLang()
 
   const playing = data?.nowPlaying
   const fallback = data?.recent?.[0]
@@ -49,10 +51,10 @@ export function NowPlaying() {
         )}
         {!loading && (
           <p className="text-[11px] font-bold tracking-wide text-accent-500">
-            {playing ? 'NOW PLAYING' : '最近の再生'}
+            {playing ? 'NOW PLAYING' : t('music.recent')}
           </p>
         )}
-        {error && <p className="text-sm text-ink-400">Last.fmの取得に失敗しました</p>}
+        {error && <p className="text-sm text-ink-400">{t('error.lastfm')}</p>}
         {!loading && track && (
           <>
             <p className="truncate text-base font-bold text-ink-900">{track.title}</p>
@@ -60,7 +62,7 @@ export function NowPlaying() {
           </>
         )}
         {!loading && !error && !track && (
-          <p className="text-sm text-ink-400">再生履歴がありません</p>
+          <p className="text-sm text-ink-400">{t('music.noHistory')}</p>
         )}
       </div>
     </div>

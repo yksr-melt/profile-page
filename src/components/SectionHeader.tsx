@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useLang } from '../i18n'
 
 export function SectionHeader({
   eyebrow,
@@ -12,6 +13,8 @@ export function SectionHeader({
   onMore?: () => void
   icon?: ReactNode
 }) {
+  const { t } = useLang()
+
   return (
     <div className="mb-4 flex items-end justify-between">
       <div>
@@ -28,7 +31,7 @@ export function SectionHeader({
           onClick={onMore}
           className="flex items-center gap-0.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink-500 shadow-softer transition active:scale-95"
         >
-          もっと見る
+          {t('section.more')}
           <ChevronRight size={14} />
         </button>
       )}

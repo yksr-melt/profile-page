@@ -3,6 +3,7 @@ import { ArrowUpRight, Mail, Target } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { links, type LinkIcon } from '../data/mock'
+import { useLang } from '../i18n'
 
 const linkIcons: Record<LinkIcon, IconComponent> = {
   github: GithubLogo,
@@ -13,9 +14,11 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
 }
 
 export function Links() {
+  const { t } = useLang()
+
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
-      <PageHeader eyebrow="Links" title="リンク集" description="各種SNS・外部サービスへの入口。" />
+      <PageHeader eyebrow="Links" title={t('links.title')} description={t('links.description')} />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {links.map((l, i) => {

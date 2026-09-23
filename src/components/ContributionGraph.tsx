@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useGithubSummary, type ContributionDay } from '../hooks/useGithubSummary'
+import { useLang } from '../i18n'
 
 const levelColor: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: 'bg-ink-100',
@@ -17,6 +18,7 @@ function formatDate(dateStr: string) {
 
 export function ContributionGraph() {
   const { data, loading, error } = useGithubSummary()
+  const { t } = useLang()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<{ rect: DOMRect; day: ContributionDay } | null>(null)
 
@@ -38,15 +40,15 @@ export function ContributionGraph() {
           )}
         </p>
         <div className="flex items-center gap-1">
-          <span className="text-[10px] text-ink-400">少</span>
+          <span className="text-[10px] text-ink-400">{t('graph.less')}</span>
           {([0, 1, 2, 3, 4] as const).map((l) => (
             <span key={l} className={`h-2.5 w-2.5 rounded-[3px] ${levelColor[l]}`} />
           ))}
-          <span className="text-[10px] text-ink-400">多</span>
+          <span className="text-[10px] text-ink-400">{t('graph.more')}</span>
         </div>
       </div>
 
-      {error && <p className="py-6 text-center text-xs text-ink-400">GitHubの取得に失敗しました</p>}
+      {error && <p className="py-6 text-center text-xs text-ink-400">{t('error.github')}</p>}
 
       {loading && !error && (
         <div className="flex gap-[3px]">

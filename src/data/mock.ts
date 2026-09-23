@@ -1,9 +1,10 @@
 import config from './config.json'
+import type { Text } from '../i18n'
 
 export type Project = {
   id: string
   name: string
-  description: string
+  description: Text
   tags: string[]
   status: 'active' | 'archived' | 'wip'
   featured?: boolean
@@ -32,40 +33,65 @@ export type Playlist = {
 export type InterestIcon = 'gamepad' | 'music' | 'clapperboard' | 'sparkles'
 
 export type InterestGroup = {
-  category: string
+  category: Text
   icon: InterestIcon
-  items: string[]
+  items: Text[]
+}
+
+export type Oshi = {
+  name: Text
+  // Where they're from (a series, group, game, ...)
+  from?: Text
+  emoji?: string
+  image?: string
+  url?: string
+}
+
+export type FavoriteArtist = {
+  name: Text
+  genre?: Text
+  image?: string
+  url?: string
 }
 
 export type SetupIcon = 'laptop' | 'server'
 
 export type SetupGroup = {
-  group: string
+  group: Text
   icon: SetupIcon
-  specs: { label: string; value: string }[]
+  specs: { label: Text; value: Text }[]
 }
 
 export type Achievement = {
-  title: string
-  description: string
+  title: Text
+  description: Text
   url?: string
   emoji: string
 }
 
 export type CurrentGame = {
-  name: string
+  name: Text
   since: string
 }
 
-export const site = config.site
+export const site = config.site as {
+  name: string
+  role: Text
+  pronouns: string
+  homeIntro: Text
+  aboutText: Text
+  contactEmails: { label: string; email: string }[]
+}
 export const skills = config.skills
 export const playlists = config.playlists as Playlist[]
 export const projects = config.projects as Project[]
 export const interests = config.interests as InterestGroup[]
-export const wantToTry = config.wantToTry
+export const oshi = config.oshi as Oshi[]
+export const favoriteArtists = config.favoriteArtists as FavoriteArtist[]
+export const wantToTry = config.wantToTry as Text[]
 export const achievements = config.achievements as Achievement[]
 export const currentGames = config.currentGames as CurrentGame[]
-export const specialSkills = config.specialSkills
+export const specialSkills = config.specialSkills as Text[]
 export const setup = config.setup as SetupGroup[]
 export const contactEmails = site.contactEmails
 

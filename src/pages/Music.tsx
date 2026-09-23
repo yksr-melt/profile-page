@@ -5,16 +5,18 @@ import { PageHeader } from '../components/PageHeader'
 import { NowPlaying } from '../components/NowPlaying'
 import { useLastfmDashboard } from '../hooks/useLastfmDashboard'
 import { playlists } from '../data/mock'
+import { useLang } from '../i18n'
 
 export function Music() {
   const { data, loading, error } = useLastfmDashboard()
+  const { t } = useLang()
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
       <PageHeader
         eyebrow="Music"
-        title="聴いているもの"
-        description="普段聴いている曲と、よく聴くアーティスト・トラックのまとめ。"
+        title={t('music.title')}
+        description={t('music.description')}
       />
 
       <div className="mb-6">
@@ -31,7 +33,7 @@ export function Music() {
           <p className="text-2xl font-black">
             {data ? data.weeklyPlays.toLocaleString() : loading ? '···' : '-'}
           </p>
-          <p className="text-xs font-bold opacity-80">回再生 / 今週</p>
+          <p className="text-xs font-bold opacity-80">{t('music.weeklyPlays')}</p>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -43,19 +45,19 @@ export function Music() {
           <p className="text-2xl font-black">
             {data ? data.totalScrobbles.toLocaleString() : loading ? '···' : '-'}
           </p>
-          <p className="text-xs font-bold opacity-80">総 Scrobbles</p>
+          <p className="text-xs font-bold opacity-80">{t('music.totalScrobbles')}</p>
         </motion.div>
       </div>
 
-      {error && <p className="mb-6 text-center text-xs text-ink-400">Last.fmの取得に失敗しました</p>}
+      {error && <p className="mb-6 text-center text-xs text-ink-400">{t('error.lastfm')}</p>}
 
       <Section title="Recently Played" icon={<Disc3 size={16} className="text-accent-400" />}>
         <div className="space-y-2">
           {data?.recent.length === 0 && !loading && (
-            <p className="text-xs text-ink-400">再生履歴がありません</p>
+            <p className="text-xs text-ink-400">{t('music.noHistory')}</p>
           )}
-          {(data?.recent ?? (loading ? Array.from({ length: 5 }) : [])).map((t, i) => {
-            const track = t as { title?: string; artist?: string; image?: string } | undefined
+          {(data?.recent ?? (loading ? Array.from({ length: 5 }) : [])).map((item, i) => {
+            const track = item as { title?: string; artist?: string; image?: string } | undefined
             return (
               <Row
                 key={i}
@@ -89,15 +91,15 @@ export function Music() {
 
       <Section title="Top Tracks" icon={<Disc3 size={16} className="text-accent-400" />}>
         <div className="space-y-2">
-          {(data?.topTracks ?? (loading ? Array.from({ length: 3 }) : [])).map((t, i) => {
-            const track = t as { title?: string; artist?: string; plays?: number } | undefined
+          {(data?.topTracks ?? (loading ? Array.from({ length: 3 }) : [])).map((item, i) => {
+            const track = item as { title?: string; artist?: string; plays?: number } | undefined
             return (
               <Row
                 key={i}
                 index={i}
                 title={track?.title}
                 subtitle={track?.artist}
-                trailing={track?.plays ? `${track.plays}回` : undefined}
+                trailing={track?.plays ? t('music.trackPlays', { n: track.plays }) : undefined}
               />
             )
           })}
@@ -114,7 +116,7 @@ export function Music() {
                 rel="noreferrer"
                 className="block bg-white px-4 py-2.5 text-xs font-bold text-ink-500 transition hover:text-accent-500"
               >
-                {p.name} で開く ↗
+                {t('music.openIn', { name: p.name })}
               </a>
               <iframe
                 title={p.name}

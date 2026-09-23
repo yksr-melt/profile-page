@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion'
-import { ExternalLink, Star, Award } from 'lucide-react'
+import { ExternalLink, Star, Award, Globe } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo } from '../components/BrandIcons'
 import { useGithubRepos } from '../hooks/useGithubRepos'
 import { projects, achievements } from '../data/mock'
+import { useLang, type MessageKey } from '../i18n'
 
-const statusLabel: Record<string, string> = {
-  active: '運用中',
-  wip: '開発中',
-  archived: 'アーカイブ',
+const statusLabel: Record<string, MessageKey> = {
+  active: 'status.active',
+  wip: 'status.wip',
+  archived: 'status.archived',
 }
 
 const statusColor: Record<string, string> = {
@@ -31,47 +32,15 @@ const languageColor: Record<string, string> = {
 
 export function Product() {
   const { data: repos, loading, error } = useGithubRepos()
+  const { t, l } = useLang()
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
       <PageHeader
         eyebrow="Product"
-        title="作ったもの"
-        description="いままでに作ってきたもの。"
+        title={t('product.title')}
+        description={t('product.description')}
       />
-
-      <div className="mb-8 rounded-3xl border border-ink-200/60 bg-white p-5 shadow-softer">
-        <div className="mb-3 flex items-center gap-1.5">
-          <Award size={15} className="text-accent-400" />
-          <h3 className="text-sm font-black text-ink-900">実績</h3>
-        </div>
-        <div className="flex flex-col gap-2">
-          {achievements.map((a) => {
-            const content = (
-              <>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-50 text-lg shadow-softer">
-                  {a.emoji}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-ink-800">{a.title}</p>
-                  <p className="text-xs text-ink-400">{a.description}</p>
-                </div>
-              </>
-            )
-            const className =
-              'flex items-center gap-3 rounded-2xl bg-ink-50 px-4 py-3 transition active:scale-[0.98]'
-            return a.url ? (
-              <a key={a.title} href={a.url} target="_blank" rel="noreferrer" className={className}>
-                {content}
-              </a>
-            ) : (
-              <div key={a.title} className={className}>
-                {content}
-              </div>
-            )
-          })}
-        </div>
-      </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {projects.map((p, i) => (
@@ -86,28 +55,40 @@ export function Product() {
             <div className="mb-2 flex items-center justify-between">
               <span className="text-2xl">{p.emoji}</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusColor[p.status]}`}>
-                {statusLabel[p.status]}
+                {t(statusLabel[p.status])}
               </span>
             </div>
             <h3 className="mb-1 font-black text-ink-900">{p.name}</h3>
-            <p className="mb-3 text-sm text-ink-500">{p.description}</p>
+            <p className="mb-3 text-sm text-ink-500">{l(p.description)}</p>
             <div className="mb-3 flex flex-wrap gap-1.5">
-              {p.tags.map((t) => (
-                <span key={t} className="rounded-full bg-accent-50 px-2 py-0.5 text-[10px] font-bold text-accent-500">
-                  {t}
+              {p.tags.map((tag) => (
+                <span key={tag} className="rounded-full bg-accent-50 px-2 py-0.5 text-[10px] font-bold text-accent-500">
+                  {tag}
                 </span>
               ))}
             </div>
-            {p.github && (
-              <a
-                href={p.github}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-500"
-              >
-                <GithubLogo size={13} /> Code
-              </a>
-            )}
+            <div className="flex items-center gap-4">
+              {p.github && (
+                <a
+                  href={p.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-500"
+                >
+                  <GithubLogo size={13} /> {t('product.code')}
+                </a>
+              )}
+              {p.url && (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-500"
+                >
+                  <Globe size={13} /> Site
+                </a>
+              )}
+            </div>
           </motion.div>
         ))}
       </div>
@@ -117,7 +98,7 @@ export function Product() {
         <h2 className="text-sm font-black text-ink-900">Repositories</h2>
       </div>
 
-      {error && <p className="py-4 text-center text-xs text-ink-400">GitHubの取得に失敗しました</p>}
+      {error && <p className="py-4 text-center text-xs text-ink-400">{t('error.github')}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {loading &&
@@ -141,7 +122,7 @@ export function Product() {
               <p className="truncate font-black text-ink-900">{r.name}</p>
               <ExternalLink size={14} className="shrink-0 text-ink-300" />
             </div>
-            <p className="mb-3 line-clamp-2 text-sm text-ink-500">{r.description || '説明はありません'}</p>
+            <p className="mb-3 line-clamp-2 text-sm text-ink-500">{r.description || t('product.noDescription')}</p>
             <div className="mt-auto flex items-center gap-3 text-xs text-ink-400">
               {r.language && (
                 <span className="flex items-center gap-1.5">
@@ -163,9 +144,42 @@ export function Product() {
 
         {repos && repos.length === 0 && !loading && (
           <p className="col-span-full py-4 text-center text-xs text-ink-400">
-            公開されているリポジトリがありません
+            {t('product.noRepos')}
           </p>
         )}
+      </div>
+
+      <div className="mt-8 rounded-3xl border border-ink-200/60 bg-white p-5 shadow-softer">
+        <div className="mb-3 flex items-center gap-1.5">
+          <Award size={15} className="text-accent-400" />
+          <h3 className="text-sm font-black text-ink-900">{t('product.achievements')}</h3>
+        </div>
+        <div className="flex flex-col gap-2">
+          {achievements.map((a) => {
+            const content = (
+              <>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-50 text-lg shadow-softer">
+                  {a.emoji}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-ink-800">{l(a.title)}</p>
+                  <p className="text-xs text-ink-400">{l(a.description)}</p>
+                </div>
+              </>
+            )
+            const className =
+              'flex items-center gap-3 rounded-2xl bg-ink-50 px-4 py-3 transition active:scale-[0.98]'
+            return a.url ? (
+              <a key={l(a.title)} href={a.url} target="_blank" rel="noreferrer" className={className}>
+                {content}
+              </a>
+            ) : (
+              <div key={l(a.title)} className={className}>
+                {content}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

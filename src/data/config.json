@@ -1,10 +1,16 @@
 {
   "site": {
     "name": "ibutya",
-    "role": "Programmer / Student",
+    "role": { "ja": "Programmer / Student", "en": "Programmer / Student" },
     "pronouns": "he/him",
-    "homeIntro": "プログラミングと音楽が好きなそこらへんの学生。Node.jsに支配されてます。",
-    "aboutText": "プログラミングと音楽が好きな学生です。最近は色々なジャンルの音楽を聴き漁りながら、自分のための小さなツールやBotをNode.js/TypeScriptで作るのに夢中になっています。好奇心旺盛で気になったことにはすぐ手を出す一方、いざ作り始めると細部まで詰めたくなる完璧主義な一面もあり、基本的には自分のペースでこつこつ進めるタイプです。",
+    "homeIntro": {
+      "ja": "プログラミングと音楽が好きなそこらへんの学生。Node.jsに支配されてます。",
+      "en": "Just a student who loves programming and music. Ruled by Node.js."
+    },
+    "aboutText": {
+      "ja": "プログラミングと音楽が好きな学生です。最近は色々なジャンルの音楽を聴き漁りながら、自分のための小さなツールやBotをNode.js/TypeScriptで作るのに夢中になっています。好奇心旺盛で気になったことにはすぐ手を出す一方、いざ作り始めると細部まで詰めたくなる完璧主義な一面もあり、基本的には自分のペースでこつこつ進めるタイプです。",
+      "en": "I'm a student who loves programming and music. Lately I've been digging through all kinds of music while building small tools and bots for myself with Node.js/TypeScript. I'm curious and jump into anything that catches my interest, but once I start building I turn into a perfectionist who wants every detail right. I generally work steadily at my own pace."
+    },
     "contactEmails": [
       { "label": "General", "email": "melt@ibutya.com" }
     ]
@@ -18,43 +24,78 @@
     "LLMs"
   ],
   "interests": [
-    { "category": "音楽", "icon": "music", "items": ["future bass", "future core", "ゲーム音楽", "ボカロ"] },
-    { "category": "アニメ", "icon": "clapperboard", "items": ["ぼっち・ざ・ろっく！", "リコリス・リコイル", "超かぐや姫！"] },
-    { "category": "趣味", "icon": "sparkles", "items": ["プログラミング", "DTM（ちょっとだけ）"] }
+    {
+      "category": { "ja": "音楽", "en": "Music" },
+      "icon": "music",
+      "items": [
+        "future bass",
+        "future core",
+        { "ja": "ゲーム音楽", "en": "Game music" },
+        { "ja": "ボカロ", "en": "Vocaloid" }
+      ]
+    },
+    {
+      "category": { "ja": "アニメ", "en": "Anime" },
+      "icon": "clapperboard",
+      "items": [
+        { "ja": "ぼっち・ざ・ろっく！", "en": "Bocchi the Rock!" },
+        { "ja": "リコリス・リコイル", "en": "Lycoris Recoil" },
+        { "ja": "超かぐや姫！", "en": "Cosmic Princess Kaguya!" }
+      ]
+    },
+    {
+      "category": { "ja": "趣味", "en": "Hobbies" },
+      "icon": "sparkles",
+      "items": [
+        { "ja": "プログラミング", "en": "Programming" },
+        { "ja": "DTM（ちょっとだけ）", "en": "DTM (just a little)" }
+      ]
+    }
   ],
+  "oshi": [],
+  "favoriteArtists": [],
   "currentGames": [
     { "name": "osu!", "since": "2024〜" },
-    { "name": "雀魂", "since": "2023〜" },
+    { "name": { "ja": "雀魂", "en": "Mahjong Soul" }, "since": "2023〜" },
     { "name": "Revolution Idle", "since": "2025〜" },
     { "name": "tetrio", "since": "2025〜" },
-    { "name": "ブルアカ", "since": "2025.11.07〜" },
-    { "name": "学マス", "since": "2026.08.16〜" }
+    { "name": { "ja": "ブルアカ", "en": "Blue Archive" }, "since": "2025.11.07〜" },
+    { "name": { "ja": "学マス", "en": "Gakuen iDOLM@STER" }, "since": "2026.08.16〜" }
   ],
-  "wantToTry": ["女装", "DJ", "自作OSをスマホに焼く"],
-  "specialSkills": ["パソコンを触ると壊れる"],
+  "wantToTry": [
+    { "ja": "女装", "en": "Crossdressing" },
+    "DJ",
+    { "ja": "自作OSをスマホに焼く", "en": "Flash my own OS onto a phone" }
+  ],
+  "specialSkills": [
+    { "ja": "パソコンを触ると壊れる", "en": "Computers break when I touch them" }
+  ],
   "achievements": [
     {
-      "title": "Homebrew (brew.sh) 日本語訳",
-      "description": "パッケージマネージャー Homebrew の公式サイトの日本語訳を担当。",
+      "title": { "ja": "Homebrew (brew.sh) 日本語訳", "en": "Homebrew (brew.sh) Japanese translation" },
+      "description": {
+        "ja": "パッケージマネージャー Homebrew の公式サイトの日本語訳を担当。",
+        "en": "Translated the official website of the Homebrew package manager into Japanese."
+      },
       "url": "https://brew.sh/ja/",
       "emoji": "🍺"
     }
   ],
   "setup": [
     {
-      "group": "メイン",
+      "group": { "ja": "メイン", "en": "Main" },
       "icon": "laptop",
       "specs": [
-        { "label": "機種", "value": "MacBook Air (2020)" },
+        { "label": { "ja": "機種", "en": "Model" }, "value": "MacBook Air (2020)" },
         { "label": "RAM", "value": "8GB" },
-        { "label": "ブラウザ", "value": "Firefox" }
+        { "label": { "ja": "ブラウザ", "en": "Browser" }, "value": "Firefox" }
       ]
     },
     {
-      "group": "サーバー",
+      "group": { "ja": "サーバー", "en": "Server" },
       "icon": "server",
       "specs": [
-        { "label": "機種", "value": "Raspberry Pi 4 Model B" },
+        { "label": { "ja": "機種", "en": "Model" }, "value": "Raspberry Pi 4 Model B" },
         { "label": "OS", "value": "Debian" }
       ]
     }
@@ -71,7 +112,10 @@
     {
       "id": "meltty",
       "name": "meltty",
-      "description": "macOS上で複数のターミナル（TTY）とプロセスをリアルタイム監視できるTUI",
+      "description": {
+        "ja": "macOS上で複数のターミナル（TTY）とプロセスをリアルタイム監視できるTUI",
+        "en": "A TUI for monitoring multiple terminals (TTYs) and processes on macOS in real time."
+      },
       "tags": ["TypeScript", "TUI"],
       "status": "active",
       "github": "https://github.com/yksr-melt/meltty",
@@ -80,11 +124,39 @@
     {
       "id": "melt-bot",
       "name": "Melt bot",
-      "description": "サーバー運営を支援するDiscord Bot。",
+      "description": {
+        "ja": "サーバー運営を支援するDiscord Bot。",
+        "en": "A Discord bot that helps run servers."
+      },
       "tags": ["Node.js", "discord.js"],
       "status": "active",
       "github": "https://github.com/yksr-melt/melt-bot",
       "emoji": "🤖"
+    },
+    {
+      "id": "spotify-viewer",
+      "name": "Spotify Viewer",
+      "description": {
+        "ja": "同期歌詞・BPM/キー・再生数を1画面にまとめた、Spotifyの「いま再生中」ディスプレイ。",
+        "en": "A Spotify now-playing display with synced lyrics, BPM/key and play counts on one screen."
+      },
+      "tags": ["Node.js", "Spotify API", "Last.fm"],
+      "status": "active",
+      "github": "https://github.com/yksr-melt/Spotify-Viewer",
+      "emoji": "🎶"
+    },
+    {
+      "id": "profile-page",
+      "name": "profile-page",
+      "description": {
+        "ja": "このサイト。GitHubとLast.fmの実データを表示する個人ポータル。",
+        "en": "This site: a personal portal showing live data from GitHub and Last.fm."
+      },
+      "tags": ["React", "TypeScript", "Express"],
+      "status": "active",
+      "github": "https://github.com/yksr-melt/profile-page",
+      "url": "https://ibutya.com",
+      "emoji": "🌸"
     }
   ],
   "links": [

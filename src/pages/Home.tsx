@@ -6,11 +6,13 @@ import { Reveal } from '../components/Reveal'
 import { SectionHeader } from '../components/SectionHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { LinkIconButton } from '../components/LinkIconButton'
+import { LanguageToggle } from '../components/LanguageToggle'
 import { useGithubSummary } from '../hooks/useGithubSummary'
 import { useLastfmDashboard } from '../hooks/useLastfmDashboard'
 import { useVisitCounter } from '../hooks/useVisitCounter'
 import { projects, links, skills, site, type LinkIcon } from '../data/mock'
 import type { Tab } from '../types'
+import { useLang } from '../i18n'
 
 const linkIcons: Record<LinkIcon, IconComponent> = {
   github: GithubLogo,
@@ -25,6 +27,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   const { data: github } = useGithubSummary()
   const { data: lastfm } = useLastfmDashboard()
   const visits = useVisitCounter()
+  const { t, l } = useLang()
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
@@ -34,6 +37,9 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8"
       >
+        <div className="mb-5 flex justify-end">
+          <LanguageToggle />
+        </div>
         <div className="mb-4 flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[22px] bg-gradient-to-br from-accent-300 via-accent-400 to-accent-500 text-2xl font-black text-white shadow-soft">
             <img src="/avatar.jpg" alt="" className="h-full w-full object-cover" />
@@ -43,13 +49,13 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
               {github?.profile.name || site.name}
             </h1>
             <p className="text-sm font-medium text-ink-500">
-              {github?.profile.bio || site.role}
+              {github?.profile.bio || l(site.role)}
             </p>
           </div>
         </div>
         {visits !== null && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-ink-500 shadow-softer">
-            累計アクセス {visits.toLocaleString()}
+            {t('home.visits')} {visits.toLocaleString()}
           </span>
         )}
       </motion.div>
@@ -65,7 +71,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <Reveal direction="left">
           <SectionHeader
             eyebrow="Product"
-            title="作ったもの"
+            title={t('product.title')}
             icon={<Boxes size={18} className="text-accent-400" />}
             onMore={() => onNavigate('product')}
           />
@@ -79,7 +85,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
               <span className="text-2xl">{featured.emoji}</span>
               <span className="font-black text-ink-900">{featured.name}</span>
             </div>
-            <p className="mb-3 text-sm text-ink-500">{featured.description}</p>
+            <p className="mb-3 text-sm text-ink-500">{l(featured.description)}</p>
             <div className="flex flex-wrap gap-1.5">
               {featured.tags.map((t) => (
                 <span
@@ -98,7 +104,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <Reveal direction="right">
           <SectionHeader
             eyebrow="Music"
-            title="聴いているもの"
+            title={t('music.title')}
             icon={<Music2 size={18} className="text-accent-400" />}
             onMore={() => onNavigate('music')}
           />
@@ -113,7 +119,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
                 MUSIC DASHBOARD
               </p>
               <p className="mt-1 text-lg font-black text-white">
-                今週 {lastfm ? lastfm.weeklyPlays.toLocaleString() : '···'} 回再生
+                {t('home.weeklyPlays', { n: lastfm ? lastfm.weeklyPlays.toLocaleString() : '···' })}
               </p>
             </div>
             <div className="text-3xl">🎧</div>
@@ -125,7 +131,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <Reveal direction="left">
           <SectionHeader
             eyebrow="Me"
-            title="自分自身"
+            title={t('me.title')}
             icon={<User size={18} className="text-accent-400" />}
             onMore={() => onNavigate('me')}
           />
@@ -135,7 +141,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
             onClick={() => onNavigate('me')}
             className="block w-full rounded-3xl border border-ink-200/60 bg-white p-5 text-left shadow-softer transition active:scale-[0.98]"
           >
-            <p className="mb-3 text-sm text-ink-500">{site.homeIntro}</p>
+            <p className="mb-3 text-sm text-ink-500">{l(site.homeIntro)}</p>
             <div className="flex flex-wrap gap-1.5">
               {skills.slice(0, 5).map((s) => (
                 <span
@@ -154,7 +160,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <Reveal direction="right">
           <SectionHeader
             eyebrow="Links"
-            title="リンク集"
+            title={t('links.title')}
             icon={<Link2 size={18} className="text-accent-400" />}
             onMore={() => onNavigate('links')}
           />
