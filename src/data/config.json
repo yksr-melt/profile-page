@@ -63,7 +63,6 @@
     { "name": { "ja": "学マス", "en": "Gakuen iDOLM@STER" }, "since": "2026.08.16〜" }
   ],
   "wantToTry": [
-    { "ja": "女装", "en": "Crossdressing" },
     "DJ",
     { "ja": "自作OSをスマホに焼く", "en": "Flash my own OS onto a phone" }
   ],
@@ -79,6 +78,15 @@
       },
       "url": "https://brew.sh/ja/",
       "emoji": "🍺"
+    },
+    {
+      "title": { "ja": "TypeScript のバグ修正", "en": "Bug fixes in TypeScript" },
+      "description": {
+        "ja": "microsoft/TypeScript にコントリビュート。import文の補完のフィルタリングと、オブジェクトプロパティ補完のクォート設定の不具合を修正。",
+        "en": "Contributed to microsoft/TypeScript: fixed import statement completion filtering and made object property completions respect the quote preference."
+      },
+      "url": "https://github.com/microsoft/TypeScript/pulls?q=is%3Apr+author%3Ayksr-melt+is%3Amerged",
+      "emoji": "🟦"
     }
   ],
   "setup": [
@@ -144,19 +152,6 @@
       "status": "active",
       "github": "https://github.com/yksr-melt/Spotify-Viewer",
       "emoji": "🎶"
-    },
-    {
-      "id": "profile-page",
-      "name": "profile-page",
-      "description": {
-        "ja": "このサイト。GitHubとLast.fmの実データを表示する個人ポータル。",
-        "en": "This site: a personal portal showing live data from GitHub and Last.fm."
-      },
-      "tags": ["React", "TypeScript", "Express"],
-      "status": "active",
-      "github": "https://github.com/yksr-melt/profile-page",
-      "url": "https://ibutya.com",
-      "emoji": "🌸"
     }
   ],
   "links": [
