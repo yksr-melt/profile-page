@@ -360,6 +360,10 @@ export function createApp({ distDir = DIST_DIR, dataDir = DATA_DIR, sources = de
   // its not-found page for paths it doesn't know.
   if (fs.existsSync(distDir)) {
     app.use(express.static(distDir))
+    // A missing build asset is a plain 404, not the SPA's HTML.
+    app.use('/assets', (req, res) => {
+      res.sendStatus(404)
+    })
     app.get(/.*/, (req, res) => {
       // `root` keeps send's dotfile check to the file name, so a checkout
       // under a hidden directory still works.

@@ -79,9 +79,11 @@ describe('routing', () => {
     }
   })
 
-  test('static files are served, missing ones are 404', async () => {
+  test('static files are served, missing assets are a plain 404', async () => {
     assert.equal((await fetch(site.url + '/assets/app.js')).status, 200)
-    assert.equal((await fetch(site.url + '/assets/missing.js')).status, 404)
+    const res = await fetch(site.url + '/assets/missing.js')
+    assert.equal(res.status, 404)
+    assert.doesNotMatch(await res.text(), /<title>spa<\/title>/)
   })
 
   test('unknown API paths are a JSON 404, not the SPA', async () => {
