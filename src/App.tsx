@@ -2,10 +2,12 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
+import { NotFound } from './pages/NotFound'
 import { useGithubSummary } from './hooks/useGithubSummary'
 import { useLastfmDashboard } from './hooks/useLastfmDashboard'
 import { useAppReady } from './hooks/useAppReady'
 import { TAB_ORDER, type Tab } from './types'
+import { TAB_PATHS, normalizePath, tabFromPath } from './routes'
 
 // Home is the landing tab, so it loads eagerly with the rest of the app.
 // The other tabs only matter once the user navigates to them, so they're
@@ -26,9 +28,16 @@ const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>
   links: Links,
 }
 
+// Not-found shares Home's slot for the slide direction.
+function tabIndex(tab: Tab | null) {
+  return TAB_ORDER.indexOf(tab ?? 'home')
+}
+
 function App() {
-  const [tab, setTab] = useState<Tab>('home')
-  const prevIndex = useRef(TAB_ORDER.indexOf('home'))
+  // null means the URL isn't one of our tabs; the server has already answered
+  // it with a 404, and we show the not-found page.
+  const [tab, setTab] = useState<Tab | null>(() => tabFromPath(window.location.pathname))
+  const prevIndex = useRef(tabIndex(tab))
   const { loading: githubLoading } = useGithubSummary()
   const { loading: lastfmLoading } = useLastfmDashboard()
   const fontsReady = useAppReady()
@@ -71,15 +80,38 @@ function App() {
     return () => clearTimeout(timeout)
   }, [appReady])
 
-  const index = TAB_ORDER.indexOf(tab)
+  // Drop a trailing slash (/music/ -> /music) so each tab has one URL.
+  useEffect(() => {
+    const { pathname, search, hash } = window.location
+    if (tab && pathname !== normalizePath(pathname)) {
+      window.history.replaceState(null, '', normalizePath(pathname) + search + hash)
+    }
+  }, [tab])
+
+  // Browser back/forward: follow the URL.
+  useEffect(() => {
+    const onPopState = () => {
+      const next = tabFromPath(window.location.pathname)
+      setTab((current) => {
+        prevIndex.current = tabIndex(current)
+        return next
+      })
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  const index = tabIndex(tab)
   const direction = index > prevIndex.current ? 1 : index < prevIndex.current ? -1 : 0
 
   const handleChange = (next: Tab) => {
-    prevIndex.current = TAB_ORDER.indexOf(tab)
+    if (next === tab) return
+    prevIndex.current = tabIndex(tab)
     setTab(next)
+    window.history.pushState(null, '', TAB_PATHS[next])
   }
 
-  const Page = pages[tab]
+  const Page = tab ? pages[tab] : NotFound
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-ink-50">
@@ -87,7 +119,7 @@ function App() {
 
       <AnimatePresence mode="wait" custom={direction}>
         <motion.main
-          key={tab}
+          key={tab ?? 'not-found'}
           custom={direction}
           initial={{ opacity: 0, x: direction * 24 }}
           animate={{ opacity: 1, x: 0 }}

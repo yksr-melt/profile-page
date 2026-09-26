@@ -78,6 +78,13 @@ export const messages = {
   'links.title': { ja: 'リンク集', en: 'Links' },
   'links.description': { ja: '各種SNS・外部サービスへの入口。', en: 'Where to find me on social media and other services.' },
 
+  'notFound.title': { ja: 'ページが見つかりません', en: 'Page not found' },
+  'notFound.description': {
+    ja: 'お探しのページは存在しないか、移動した可能性があります。',
+    en: 'The page you are looking for does not exist or may have moved.',
+  },
+  'notFound.home': { ja: 'ホームへ戻る', en: 'Back to home' },
+
   'graph.less': { ja: '少', en: 'Less' },
   'graph.more': { ja: '多', en: 'More' },
 } satisfies Record<string, Record<Lang, string>>

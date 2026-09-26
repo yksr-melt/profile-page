@@ -14,7 +14,7 @@ export function BottomNav({
   active,
   onChange,
 }: {
-  active: Tab
+  active: Tab | null
   onChange: (tab: Tab) => void
 }) {
   return (

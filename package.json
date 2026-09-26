@@ -13,6 +13,7 @@
     "dev:all": "npm run start",
     "build": "tsc -b && vite build && node scripts/cache-bust-og-image.js",
     "lint": "oxlint",
+    "test": "node --test server/test/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
