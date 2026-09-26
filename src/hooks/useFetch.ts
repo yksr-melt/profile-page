@@ -7,31 +7,74 @@ type FetchState<T> = {
 }
 
 // Multiple components on the same page (App, Home, ContributionGraph, ...)
-// call useFetch with the same URL. Without sharing in-flight requests, each
-// mount fires its own fetch — harmless server-side (responses are cached
-// there too) but wasteful in the browser. This dedupes concurrent requests
-// for the same URL and lets later mounts reuse an already-settled response.
-const cache = new Map<string, { data: unknown; error: string | null }>()
+// call useFetch with the same URL. Requests for the same URL are shared, and
+// a successful response is reused by later mounts. Failures are never cached:
+// they are retried with backoff, and retried once more when the tab comes
+// back into view.
+const MAX_RETRIES = 4
+const BASE_DELAY_MS = 1000
+
+const cache = new Map<string, unknown>()
+const failed = new Set<string>()
 const inFlight = new Map<string, Promise<unknown>>()
 
-function load(url: string): Promise<unknown> {
+async function fetchJson(url: string): Promise<unknown> {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || `Request failed: ${res.status}`)
+  }
+  return res.json()
+}
+
+// Exponential backoff (1s, 2s, 4s, 8s) with jitter, so tabs that failed
+// together don't all retry at the same moment when the server comes back.
+function retryDelay(attempt: number): number {
+  const base = BASE_DELAY_MS * 2 ** attempt
+  return base / 2 + Math.random() * (base / 2)
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// Retries pause while the tab is hidden and resume once it is visible.
+function whenVisible(): Promise<void> {
+  if (document.visibilityState !== 'hidden') return Promise.resolve()
+  return new Promise((resolve) => {
+    const onChange = () => {
+      if (document.visibilityState === 'hidden') return
+      document.removeEventListener('visibilitychange', onChange)
+      resolve()
+    }
+    document.addEventListener('visibilitychange', onChange)
+  })
+}
+
+async function fetchWithRetry(url: string, retries: number): Promise<unknown> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fetchJson(url)
+    } catch (err) {
+      if (attempt >= retries) throw err
+      await sleep(retryDelay(attempt))
+      await whenVisible()
+    }
+  }
+}
+
+function load(url: string, retries: number): Promise<unknown> {
   const pending = inFlight.get(url)
   if (pending) return pending
 
-  const promise = fetch(url)
-    .then(async (res) => {
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.error || `Request failed: ${res.status}`)
-      }
-      return res.json()
-    })
+  const promise = fetchWithRetry(url, retries)
     .then((data) => {
-      cache.set(url, { data, error: null })
+      cache.set(url, data)
+      failed.delete(url)
       return data
     })
     .catch((err) => {
-      cache.set(url, { data: null, error: String(err.message || err) })
+      failed.add(url)
       throw err
     })
     .finally(() => {
@@ -43,33 +86,37 @@ function load(url: string): Promise<unknown> {
 }
 
 export function useFetch<T>(url: string): FetchState<T> {
-  const cached = cache.get(url)
-  const [state, setState] = useState<FetchState<T>>({
-    data: (cached?.data as T) ?? null,
-    loading: !cached,
-    error: cached?.error ?? null,
-  })
+  const [state, setState] = useState<FetchState<T>>(() => ({
+    data: (cache.get(url) as T) ?? null,
+    loading: !cache.has(url),
+    error: null,
+  }))
 
   useEffect(() => {
     let cancelled = false
-    const hit = cache.get(url)
-    if (hit) {
-      setState({ data: hit.data as T, loading: false, error: hit.error })
-      return
+
+    const run = (retries: number) => {
+      load(url, retries).then(
+        (data) => {
+          if (!cancelled) setState({ data: data as T, loading: false, error: null })
+        },
+        (err) => {
+          // Keep whatever was already on screen rather than blanking it.
+          if (!cancelled) setState((prev) => ({ data: prev.data, loading: false, error: String(err.message || err) }))
+        },
+      )
     }
 
-    setState({ data: null, loading: true, error: null })
+    if (!cache.has(url)) run(MAX_RETRIES)
 
-    load(url)
-      .then((data) => {
-        if (!cancelled) setState({ data: data as T, loading: false, error: null })
-      })
-      .catch((err) => {
-        if (!cancelled) setState({ data: null, loading: false, error: String(err.message || err) })
-      })
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && failed.has(url)) run(0)
+    }
+    document.addEventListener('visibilitychange', onVisible)
 
     return () => {
       cancelled = true
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [url])
 
