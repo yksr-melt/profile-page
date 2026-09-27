@@ -3,13 +3,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCache, createLastGoodStore } from './cache.js'
-import { isAppPath } from './routes.js'
 import { createStatusSampler } from './status.js'
 import { initialData, withInitialData } from './initial-data.js'
 import { createRateLimiter } from './rate-limit.js'
 import { createStatsStore } from './stats-store.js'
 import { trustedClientIp } from './request-ip.js'
 import { createVisitCounter } from './visit-counter.js'
+import { NOT_FOUND_FILE, fileForPath } from './routes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -377,17 +377,23 @@ export function createApp({
   })
 
   // ---------- Static frontend (production) ----------
-  // After `npm run build`, dist/ holds the built SPA. Serve it from the same
-  // port as the API so a single process (and a single tunnel hostname) can
-  // expose the whole site. Tab paths (src/data/routes.json) get the SPA with
-  // 200; anything else gets the same SPA with 404, and the frontend renders
-  // its not-found page for paths it doesn't know.
+  // After `npm run build` (which runs scripts/prerender.js), dist/ holds one
+  // static HTML file per tab plus dist/404.html, and the client bundle.
+  // Served from the same port as the API so a single process (and a single
+  // tunnel hostname) can expose the whole site.
   if (fs.existsSync(distDir)) {
     const assetsDir = path.join(distDir, 'assets')
     app.use(
       express.static(distDir, {
-        // `/` goes through the handler below so it can carry the initial data.
+        // Page requests go through the handler below, for the initial-data
+        // script and the tab/404 choice — `index: false` keeps express.static
+        // from ever answering one of those on its own (e.g. GET /product/,
+        // which would otherwise resolve to product/index.html directly).
         index: false,
+        // Without this, a request for /product (no trailing slash) hits the
+        // real product/ directory on disk and gets redirected to /product/
+        // before it ever reaches the handler below.
+        redirect: false,
         setHeaders(res, filePath) {
           // Files in assets/ have a content hash in their name, so a URL never
           // changes meaning: browsers and Cloudflare can keep them for good.
@@ -397,22 +403,22 @@ export function createApp({
         },
       }),
     )
-    // A missing build asset is a plain 404, not the SPA's HTML.
+    // A missing build asset is a plain 404, not a page.
     app.use('/assets', (req, res) => {
       res.sendStatus(404)
     })
     app.get(/.*/, async (req, res, next) => {
       try {
-        // Read on every request (a few ms at most): a rebuild swaps index.html
-        // and the assets it names together, so a copy kept in memory would
-        // point at files that no longer exist until the next restart.
-        const html = await fs.promises.readFile(path.join(distDir, 'index.html'), 'utf-8')
-        const found = isAppPath(req.path)
+        const file = fileForPath(req.path)
+        // Read on every request (a few ms at most): a rebuild swaps these
+        // files and the assets they name together, so a copy kept in memory
+        // would point at files that no longer exist until the next restart.
+        const html = await fs.promises.readFile(path.join(distDir, file ?? NOT_FOUND_FILE), 'utf-8')
         res
-          .status(found ? 200 : 404)
+          .status(file ? 200 : 404)
           .set('Cache-Control', 'public, max-age=0')
           .type('html')
-          .send(found ? withInitialData(html, initialData(lastGood)) : html)
+          .send(file ? withInitialData(html, initialData(lastGood)) : html)
       } catch (err) {
         next(err)
       }

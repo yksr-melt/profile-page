@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import { Home } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useLang } from '../i18n'
@@ -11,7 +12,7 @@ export function NotFound({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
       <PageHeader eyebrow="404" title={t('notFound.title')} description={t('notFound.description')} />
       <motion.button
-        initial={{ opacity: 0, y: 12 }}
+        initial={isHydrated() ? { opacity: 0, y: 12 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.08 }}
         onClick={() => onNavigate('home')}

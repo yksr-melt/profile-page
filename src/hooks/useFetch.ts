@@ -16,8 +16,13 @@ const REFRESH_RETRIES = 2
 const BASE_DELAY_MS = 1000
 
 // The server embeds the last known GitHub/Last.fm responses in the page, so
-// the Home page can draw at once instead of waiting a round trip for them.
-// That data may be old: it is shown right away and refreshed in the background.
+// data can appear without a round trip after the JS loads. Every route is
+// prerendered (scripts/prerender.js) with no data available at build time —
+// the server only adds this script when it responds, so what's baked into
+// the static HTML is always the loading skeleton. Reading this at mount
+// (inside an effect, not at module load) means the very first client render
+// still matches that skeleton — no hydration mismatch — and the embedded
+// data, if present, replaces it a tick later without a network request.
 function readInitialData(): Record<string, unknown> {
   try {
     const text = document.getElementById('initial-data')?.textContent
@@ -27,9 +32,10 @@ function readInitialData(): Record<string, unknown> {
   }
 }
 
-const cache = new Map<string, unknown>(Object.entries(readInitialData()))
+let initialDataRead = false
+const cache = new Map<string, unknown>()
 // URLs whose cached value came from the page and hasn't been refreshed yet.
-const unrefreshed = new Set(cache.keys())
+const unrefreshed = new Set<string>()
 const failed = new Set<string>()
 const inFlight = new Map<string, Promise<unknown>>()
 
@@ -111,23 +117,39 @@ export function useFetch<T>(url: string): FetchState<T> {
   useEffect(() => {
     let cancelled = false
 
-    const run = (retries: number) => {
-      load(url, retries).then(
-        (data) => {
-          if (!cancelled) setState({ data: data as T, loading: false, error: null })
-        },
-        (err) => {
-          // Keep whatever was already on screen rather than blanking it, and
-          // only report an error when there is nothing to show.
-          if (!cancelled) {
-            setState((prev) => ({ data: prev.data, loading: false, error: prev.data ? null : String(err.message || err) }))
-          }
-        },
-      )
+    const apply = (data: unknown) => {
+      if (!cancelled) setState({ data: data as T, loading: false, error: null })
+    }
+    const fail = (err: unknown) => {
+      // Keep whatever was already on screen rather than blanking it, and
+      // only report an error when there is nothing to show.
+      if (!cancelled) {
+        const message = err instanceof Error ? err.message : String(err)
+        setState((prev) => ({ data: prev.data, loading: false, error: prev.data ? null : message }))
+      }
+    }
+    const run = (retries: number) => load(url, retries).then(apply, fail)
+
+    // Done once, on the very first effect to run anywhere — after the first
+    // commit, so it can't affect what any component's first render showed.
+    if (!initialDataRead) {
+      initialDataRead = true
+      for (const [dataUrl, value] of Object.entries(readInitialData())) {
+        if (!cache.has(dataUrl)) {
+          cache.set(dataUrl, value)
+          unrefreshed.add(dataUrl)
+        }
+      }
     }
 
-    if (!cache.has(url)) run(MAX_RETRIES)
-    else if (unrefreshed.has(url)) run(REFRESH_RETRIES)
+    if (cache.has(url)) {
+      // Resolved as a microtask rather than read straight into state here,
+      // so this is never a synchronous setState from inside the effect body.
+      Promise.resolve(cache.get(url)).then(apply)
+      if (unrefreshed.has(url)) run(REFRESH_RETRIES)
+    } else {
+      run(MAX_RETRIES)
+    }
 
     const onVisible = () => {
       if (document.visibilityState === 'visible' && failed.has(url)) run(0)

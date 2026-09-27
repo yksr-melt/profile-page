@@ -5,6 +5,7 @@ import path from 'node:path'
 import { after, before, describe, test } from 'node:test'
 import { createApp } from '../app.js'
 import { initialData, withInitialData } from '../initial-data.js'
+import { NOT_FOUND_FILE } from '../routes.js'
 
 const LS = String.fromCharCode(0x2028)
 const PS = String.fromCharCode(0x2029)
@@ -17,6 +18,13 @@ function tempDir() {
 function makeDist(html = PAGE) {
   const distDir = tempDir()
   fs.writeFileSync(path.join(distDir, 'index.html'), html)
+  for (const dir of ['me', 'music']) {
+    fs.mkdirSync(path.join(distDir, dir))
+    fs.writeFileSync(path.join(distDir, dir, 'index.html'), html)
+  }
+  // Distinct from `html` so a page's content is never mistaken for the
+  // not-found page's.
+  fs.writeFileSync(path.join(distDir, NOT_FOUND_FILE), PAGE.replace('<title>spa', '<title>not-found'))
   fs.mkdirSync(path.join(distDir, 'assets'))
   fs.writeFileSync(path.join(distDir, 'assets', 'app-abc123.js'), 'console.log(1)')
   fs.writeFileSync(path.join(distDir, 'avatar.jpg'), 'jpg')
@@ -110,12 +118,12 @@ describe('serving the page', () => {
     }
   })
 
-  test('unknown paths get the plain page with 404, without data', async () => {
+  test('unknown paths get the not-found page with 404, without data', async () => {
     const res = await fetch(site.url + '/typo')
     assert.equal(res.status, 404)
     const html = await res.text()
     assert.equal(embedded(html), null)
-    assert.equal(html, PAGE)
+    assert.match(html, /<title>not-found<\/title>/)
   })
 
   test('index.html is revalidated every time (max-age=0)', async () => {
@@ -125,13 +133,14 @@ describe('serving the page', () => {
     }
   })
 
-  test('a rebuilt index.html is served without a restart', async () => {
+  test('a rebuilt page is served without a restart (each route\'s file is read fresh)', async () => {
     fs.writeFileSync(path.join(distDir, 'index.html'), PAGE.replace('spa', 'rebuilt'))
     const html = await (await fetch(site.url + '/')).text()
     assert.match(html, /<title>rebuilt<\/title>/)
     assert.deepEqual(embedded(html), { '/api/github/summary': github, '/api/lastfm/dashboard': lastfm })
-    const notFound = await fetch(site.url + '/typo')
-    assert.match(await notFound.text(), /<title>rebuilt<\/title>/)
+    // A different route's file, untouched, is unaffected.
+    const music = await fetch(site.url + '/music/')
+    assert.match(await music.text(), /<title>spa<\/title>/)
   })
 
   test('hashed assets are cached for good, everything else is not', async () => {

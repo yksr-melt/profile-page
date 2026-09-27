@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import { ArrowUpRight, Mail, Target } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
@@ -29,7 +30,7 @@ export function Links() {
               href={l.url}
               target="_blank"
               rel="noreferrer"
-              initial={{ opacity: 0, y: 20 }}
+              initial={isHydrated() ? { opacity: 0, y: 20 } : false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.4, delay: i * 0.05 }}

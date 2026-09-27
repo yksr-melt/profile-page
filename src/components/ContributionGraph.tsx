@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useGithubSummary, type ContributionDay } from '../hooks/useGithubSummary'
+import { useIsomorphicLayoutEffect } from '../hooks/useIsomorphicLayoutEffect'
 import { useLang } from '../i18n'
 
 const levelColor: Record<0 | 1 | 2 | 3 | 4, string> = {
@@ -22,7 +23,7 @@ export function ContributionGraph() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<{ rect: DOMRect; day: ContributionDay } | null>(null)
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (data && scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth
     }

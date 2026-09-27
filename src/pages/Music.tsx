@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import type { ReactNode } from 'react'
 import { Clock, Disc3, Mic2 } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
@@ -25,7 +26,7 @@ export function Music() {
 
       <div className="mb-6 grid grid-cols-2 gap-3">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={isHydrated() ? { opacity: 0, scale: 0.95 } : false}
           animate={{ opacity: 1, scale: 1 }}
           className="rounded-3xl bg-gradient-to-br from-accent-400 to-accent-500 p-5 text-white shadow-soft"
         >
@@ -36,7 +37,7 @@ export function Music() {
           <p className="text-xs font-bold opacity-80">{t('music.weeklyPlays')}</p>
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={isHydrated() ? { opacity: 0, scale: 0.95 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.05 }}
           className="rounded-3xl bg-gradient-to-br from-ink-800 to-ink-900 p-5 text-white shadow-soft"
@@ -164,7 +165,7 @@ function Row({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={isHydrated() ? { opacity: 0, x: -20 } : false}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.04 }}

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import { Mail, Sparkles, Gamepad2, Music, Clapperboard, Laptop, Server, Rocket, Zap, Heart, Mic2 } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { useGithubSummary } from '../hooks/useGithubSummary'
@@ -40,7 +41,7 @@ export function Me() {
       <PageHeader eyebrow="Me" title={t('me.title')} description={t('me.description')} />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={isHydrated() ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
         className="mb-6 flex items-center gap-4 rounded-[28px] bg-gradient-to-br from-accent-300 via-accent-400 to-accent-500 p-6 text-white shadow-soft"
       >
@@ -72,7 +73,7 @@ export function Me() {
           {skills.map((s, i) => (
             <motion.span
               key={s}
-              initial={{ opacity: 0, scale: 0.85 }}
+              initial={isHydrated() ? { opacity: 0, scale: 0.85 } : false}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.03 }}
@@ -283,7 +284,7 @@ function Card({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={isHydrated() ? { opacity: 0, y: 20 } : false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.45, delay }}

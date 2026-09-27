@@ -13,7 +13,10 @@ node_modules
 
 # Build
 dist
+dist.new
+dist.prev
 dist-ssr
+dist-ssr-build
 *.local
 
 # Local runtime data
