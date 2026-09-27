@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
-const FONT_TIMEOUT_MS = 1500
+// font-display is swap, so text shows in the fallback font without waiting;
+// this only bounds how long the splash holds on for the swap to be seamless.
+const FONT_TIMEOUT_MS = 500
 
 /**
  * Resolves once the web font has finished loading (or a timeout elapses) and

@@ -48,7 +48,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
             <h1 className="text-2xl font-black tracking-tight text-ink-900">
               {github?.profile.name || site.name}
             </h1>
-            <p className="text-sm font-medium text-ink-500">
+            <p className="text-sm font-bold text-ink-500">
               {github?.profile.bio || l(site.role)}
             </p>
           </div>

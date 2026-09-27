@@ -10,10 +10,29 @@
     <link rel="preload" as="image" href="/avatar.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Zen Maru Gothic in the 3 weights actually used (400/700/900; the old
+         500 was only for `font-medium`, now `font-bold`). Space Grotesk was
+         requested but never referenced by any style, so it's dropped.
+         Loaded non-blocking (media="print" swapped to "all" onload) so the
+         CSS doesn't hold up the first paint; `display=swap` in the URL means
+         text still shows in the fallback font while it loads. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
+      />
+    </noscript>
     <title>Yukishiro's profile</title>
     <meta name="description" content="ゆきしろについて。各種SNSリンクや過去の創作物等を置いています。" />
 

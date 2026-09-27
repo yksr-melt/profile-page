@@ -12,9 +12,24 @@ type FetchState<T> = {
 // they are retried with backoff, and retried once more when the tab comes
 // back into view.
 const MAX_RETRIES = 4
+const REFRESH_RETRIES = 2
 const BASE_DELAY_MS = 1000
 
-const cache = new Map<string, unknown>()
+// The server embeds the last known GitHub/Last.fm responses in the page, so
+// the Home page can draw at once instead of waiting a round trip for them.
+// That data may be old: it is shown right away and refreshed in the background.
+function readInitialData(): Record<string, unknown> {
+  try {
+    const text = document.getElementById('initial-data')?.textContent
+    return text ? JSON.parse(text) : {}
+  } catch {
+    return {}
+  }
+}
+
+const cache = new Map<string, unknown>(Object.entries(readInitialData()))
+// URLs whose cached value came from the page and hasn't been refreshed yet.
+const unrefreshed = new Set(cache.keys())
 const failed = new Set<string>()
 const inFlight = new Map<string, Promise<unknown>>()
 
@@ -70,6 +85,7 @@ function load(url: string, retries: number): Promise<unknown> {
   const promise = fetchWithRetry(url, retries)
     .then((data) => {
       cache.set(url, data)
+      unrefreshed.delete(url)
       failed.delete(url)
       return data
     })
@@ -101,13 +117,17 @@ export function useFetch<T>(url: string): FetchState<T> {
           if (!cancelled) setState({ data: data as T, loading: false, error: null })
         },
         (err) => {
-          // Keep whatever was already on screen rather than blanking it.
-          if (!cancelled) setState((prev) => ({ data: prev.data, loading: false, error: String(err.message || err) }))
+          // Keep whatever was already on screen rather than blanking it, and
+          // only report an error when there is nothing to show.
+          if (!cancelled) {
+            setState((prev) => ({ data: prev.data, loading: false, error: prev.data ? null : String(err.message || err) }))
+          }
         },
       )
     }
 
     if (!cache.has(url)) run(MAX_RETRIES)
+    else if (unrefreshed.has(url)) run(REFRESH_RETRIES)
 
     const onVisible = () => {
       if (document.visibilityState === 'visible' && failed.has(url)) run(0)

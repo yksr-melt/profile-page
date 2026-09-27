@@ -93,6 +93,109 @@ describe('routing', () => {
   })
 })
 
+describe('/api/stats/visits', () => {
+  test('counts a new IP once per day; the IP itself never appears in the response', async () => {
+    const dataDir = tempDir()
+    const site = await listen(createApp({ distDir: tempDir(), dataDir, sources: sourcesWith(fakeSource()) }))
+    try {
+      const headers = { 'CF-Connecting-IP': '203.0.113.5' }
+      let res = await fetch(site.url + '/api/stats/visits', { method: 'POST', headers })
+      assert.deepEqual(await res.json(), { visits: 1 })
+      res = await fetch(site.url + '/api/stats/visits', { method: 'POST', headers })
+      const body = await res.json()
+      assert.deepEqual(body, { visits: 1 })
+      assert.ok(!JSON.stringify(body).includes('203.0.113.5'))
+    } finally {
+      site.close()
+    }
+  })
+
+  test('GET just reads the count, without counting a visit', async () => {
+    const dataDir = tempDir()
+    const site = await listen(createApp({ distDir: tempDir(), dataDir, sources: sourcesWith(fakeSource()) }))
+    try {
+      assert.deepEqual(await (await fetch(site.url + '/api/stats/visits')).json(), { visits: 0 })
+    } finally {
+      site.close()
+    }
+  })
+
+  test('20 different IPs posting at once are all counted (no lost updates)', async () => {
+    const dataDir = tempDir()
+    const site = await listen(
+      createApp({ distDir: tempDir(), dataDir, sources: sourcesWith(fakeSource()), rateLimit: { max: 100 } }),
+    )
+    try {
+      await Promise.all(
+        Array.from({ length: 20 }, (_, i) =>
+          fetch(site.url + '/api/stats/visits', { method: 'POST', headers: { 'CF-Connecting-IP': `203.0.113.${i}` } }),
+        ),
+      )
+      assert.deepEqual(await (await fetch(site.url + '/api/stats/visits')).json(), { visits: 20 })
+    } finally {
+      site.close()
+    }
+  })
+})
+
+describe('rate limiting', () => {
+  test('/api/status has its own, looser budget: two tabs polling it are not throttled by /api\'s general one', async () => {
+    const dataDir = tempDir()
+    const site = await listen(
+      createApp({
+        distDir: tempDir(),
+        dataDir,
+        sources: sourcesWith(fakeSource()),
+        status: { read: () => ({ ok: true }) },
+        rateLimit: { max: 5 },
+      }),
+    )
+    try {
+      const headers = { 'CF-Connecting-IP': '198.51.100.9' }
+      // Well past the general /api budget (5), well within status's own.
+      for (let i = 0; i < 10; i++) {
+        assert.equal((await fetch(site.url + '/api/status', { headers })).status, 200)
+      }
+      // The general budget is still enforced for everything else.
+      for (let i = 0; i < 5; i++) await fetch(site.url + '/api/stats/visits', { headers })
+      assert.equal((await fetch(site.url + '/api/stats/visits', { headers })).status, 429)
+    } finally {
+      site.close()
+    }
+  })
+
+
+  test('an IP over the /api budget gets 429s; other endpoints and other IPs are unaffected', async () => {
+    const dataDir = tempDir()
+    const site = await listen(
+      createApp({
+        distDir: path.join(tempDir(), 'no-dist'),
+        dataDir,
+        sources: sourcesWith(fakeSource()),
+        rateLimit: { windowMs: 60 * 1000, max: 3 },
+      }),
+    )
+    try {
+      const headers = { 'CF-Connecting-IP': '198.51.100.1' }
+      for (let i = 0; i < 3; i++) {
+        assert.equal((await fetch(site.url + '/api/stats/visits', { headers })).status, 200)
+      }
+      const blocked = await fetch(site.url + '/api/github/summary', { headers })
+      assert.equal(blocked.status, 429)
+      assert.deepEqual(await blocked.json(), { error: 'too_many_requests' })
+      assert.ok(blocked.headers.get('retry-after'))
+
+      const otherIp = await fetch(site.url + '/api/stats/visits', { headers: { 'CF-Connecting-IP': '198.51.100.2' } })
+      assert.equal(otherIp.status, 200)
+
+      // The limiter only guards /api; a request to the (non-existent) page itself is unaffected.
+      assert.equal((await fetch(site.url + '/typo', { headers })).status, 404)
+    } finally {
+      site.close()
+    }
+  })
+})
+
 describe('upstream failures', () => {
   test('first-ever failure returns only a generic error', async () => {
     const source = fakeSource()

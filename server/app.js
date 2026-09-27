@@ -5,6 +5,11 @@ import { fileURLToPath } from 'node:url'
 import { createCache, createLastGoodStore } from './cache.js'
 import { isAppPath } from './routes.js'
 import { createStatusSampler } from './status.js'
+import { initialData, withInitialData } from './initial-data.js'
+import { createRateLimiter } from './rate-limit.js'
+import { createStatsStore } from './stats-store.js'
+import { trustedClientIp } from './request-ip.js'
+import { createVisitCounter } from './visit-counter.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -297,36 +302,36 @@ export function createApp({
   sources = defaultSources,
   now,
   status = createStatusSampler(),
+  rateLimit = {},
+  statusRateLimit = {},
 } = {}) {
   const app = express()
-  const cached = createCache({ lastGood: createLastGoodStore(path.join(dataDir, 'last-good.json')), now })
+  const lastGood = createLastGoodStore(path.join(dataDir, 'last-good.json'))
+  const cached = createCache({ lastGood, now })
+  const visits = createVisitCounter({ store: createStatsStore(path.join(dataDir, 'stats.json')), now })
+
+  // A script hammering an endpoint is the main thing this defends against.
+  // /api/status is exempt from this general budget and has its own, looser
+  // one: it's polled every 2s while the panel is open (30/min per visitor,
+  // so two tabs or two visitors alone would trip a 60/min shared budget),
+  // and answering it never costs an extra upstream request — the sampler
+  // measures on its own timer regardless of how many people are reading it.
+  app.use(
+    '/api',
+    createRateLimiter({ now, skip: (req) => req.path === '/status', ...rateLimit }),
+  )
+  app.use('/api/status', createRateLimiter({ now, max: 120, ...statusRateLimit }))
 
   // ---------- Visit counter ----------
-
-  const STATS_FILE = path.join(dataDir, 'stats.json')
-
-  function readStats() {
-    try {
-      return JSON.parse(fs.readFileSync(STATS_FILE, 'utf-8'))
-    } catch {
-      return { visits: 0 }
-    }
-  }
-
-  function writeStats(stats) {
-    fs.mkdirSync(path.dirname(STATS_FILE), { recursive: true })
-    fs.writeFileSync(STATS_FILE, JSON.stringify(stats))
-  }
+  // Counted once per IP per day (server/visit-counter.js): the IP itself
+  // never leaves this module, only a salted hash of it, kept in memory only.
 
   app.get('/api/stats/visits', (req, res) => {
-    res.json(readStats())
+    res.json(visits.read())
   })
 
-  app.post('/api/stats/visits', (req, res) => {
-    const stats = readStats()
-    stats.visits = (stats.visits || 0) + 1
-    writeStats(stats)
-    res.json(stats)
+  app.post('/api/stats/visits', async (req, res) => {
+    res.json(await visits.record(trustedClientIp(req)))
   })
 
   // ---------- Upstream APIs ----------
@@ -378,15 +383,39 @@ export function createApp({
   // 200; anything else gets the same SPA with 404, and the frontend renders
   // its not-found page for paths it doesn't know.
   if (fs.existsSync(distDir)) {
-    app.use(express.static(distDir))
+    const assetsDir = path.join(distDir, 'assets')
+    app.use(
+      express.static(distDir, {
+        // `/` goes through the handler below so it can carry the initial data.
+        index: false,
+        setHeaders(res, filePath) {
+          // Files in assets/ have a content hash in their name, so a URL never
+          // changes meaning: browsers and Cloudflare can keep them for good.
+          if (!path.relative(assetsDir, filePath).startsWith('..')) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+          }
+        },
+      }),
+    )
     // A missing build asset is a plain 404, not the SPA's HTML.
     app.use('/assets', (req, res) => {
       res.sendStatus(404)
     })
-    app.get(/.*/, (req, res) => {
-      // `root` keeps send's dotfile check to the file name, so a checkout
-      // under a hidden directory still works.
-      res.status(isAppPath(req.path) ? 200 : 404).sendFile('index.html', { root: distDir })
+    app.get(/.*/, async (req, res, next) => {
+      try {
+        // Read on every request (a few ms at most): a rebuild swaps index.html
+        // and the assets it names together, so a copy kept in memory would
+        // point at files that no longer exist until the next restart.
+        const html = await fs.promises.readFile(path.join(distDir, 'index.html'), 'utf-8')
+        const found = isAppPath(req.path)
+        res
+          .status(found ? 200 : 404)
+          .set('Cache-Control', 'public, max-age=0')
+          .type('html')
+          .send(found ? withInitialData(html, initialData(lastGood)) : html)
+      } catch (err) {
+        next(err)
+      }
     })
   }
 

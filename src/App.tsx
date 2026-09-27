@@ -17,9 +17,6 @@ const Music = lazy(() => import('./pages/Music').then((m) => ({ default: m.Music
 const Me = lazy(() => import('./pages/Me').then((m) => ({ default: m.Me })))
 const Links = lazy(() => import('./pages/Links').then((m) => ({ default: m.Links })))
 
-// If the APIs are slow/unreachable, don't leave the splash up forever.
-const DATA_WAIT_TIMEOUT_MS = 6000
-
 const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>> = {
   product: Product,
   music: Music,
@@ -38,18 +35,12 @@ function App() {
   // it with a 404, and we show the not-found page.
   const [tab, setTab] = useState<Tab | null>(() => tabFromPath(window.location.pathname))
   const prevIndex = useRef(tabIndex(tab))
-  const { loading: githubLoading } = useGithubSummary()
-  const { loading: lastfmLoading } = useLastfmDashboard()
-  const fontsReady = useAppReady()
-
-  const [dataTimedOut, setDataTimedOut] = useState(false)
-  useEffect(() => {
-    const timeout = setTimeout(() => setDataTimedOut(true), DATA_WAIT_TIMEOUT_MS)
-    return () => clearTimeout(timeout)
-  }, [])
-
-  const dataReady = (!githubLoading && !lastfmLoading) || dataTimedOut
-  const appReady = fontsReady && dataReady
+  // Start these requests up front so their data is there whichever tab is
+  // opened first. The splash doesn't wait for them: the sections that use them
+  // draw skeletons of their final size and fill in when the data arrives.
+  useGithubSummary()
+  useLastfmDashboard()
+  const appReady = useAppReady()
 
   useEffect(() => {
     if (!appReady) return

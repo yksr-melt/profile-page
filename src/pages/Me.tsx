@@ -139,7 +139,7 @@ export function Me() {
                     )}
                   </div>
                   <p className="mt-2 text-sm font-black text-ink-800">{l(o.name)}</p>
-                  {o.from && <p className="text-[11px] font-medium text-ink-400">{l(o.from)}</p>}
+                  {o.from && <p className="text-[11px] font-bold text-ink-400">{l(o.from)}</p>}
                 </>
               )
               const className =
@@ -174,7 +174,7 @@ export function Me() {
                     )}
                   </div>
                   <span className="min-w-0 flex-1 truncate font-bold text-ink-700">{l(a.name)}</span>
-                  {a.genre && <span className="text-xs font-medium text-ink-400">{l(a.genre)}</span>}
+                  {a.genre && <span className="text-xs font-bold text-ink-400">{l(a.genre)}</span>}
                 </>
               )
               const className = 'flex items-center gap-3 rounded-2xl bg-ink-50 px-4 py-2.5 text-sm transition active:scale-[0.98]'
@@ -200,7 +200,7 @@ export function Me() {
               className="flex items-center justify-between rounded-2xl bg-ink-50 px-4 py-2.5 text-sm"
             >
               <span className="font-bold text-ink-700">{l(g.name)}</span>
-              <span className="text-xs font-medium text-ink-400">{g.since}</span>
+              <span className="text-xs font-bold text-ink-400">{g.since}</span>
             </div>
           ))}
         </div>
