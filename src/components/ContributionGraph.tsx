@@ -34,7 +34,7 @@ export function ContributionGraph() {
         <p className="text-sm font-bold text-ink-700">
           Contributions
           {data && (
-            <span className="ml-2 text-xs font-medium text-ink-400">
+            <span className="ml-2 text-xs font-bold text-ink-400">
               {data.totalContributions.toLocaleString()} / year
             </span>
           )}

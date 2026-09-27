@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Music4 } from 'lucide-react'
 import { useLastfmDashboard } from '../hooks/useLastfmDashboard'
 import { useLang } from '../i18n'
@@ -27,15 +26,10 @@ export function NowPlaying() {
         {playing?.isPlaying && (
           <div className="absolute -right-1.5 -bottom-1.5 flex h-6 items-end gap-[2px] rounded-full bg-white px-1.5 py-1 shadow-softer">
             {[0, 1, 2].map((i) => (
-              <motion.span
+              <span
                 key={i}
-                className="h-3 w-[3px] origin-bottom rounded-full bg-accent-500"
-                animate={{ scaleY: [0.35, 1, 0.5, 0.85, 0.35] }}
-                transition={{
-                  duration: 1 + i * 0.15,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                className="now-playing-bar h-3 w-[3px] rounded-full bg-accent-500"
+                style={{ '--now-playing-duration': `${1 + i * 0.15}s` } as React.CSSProperties}
               />
             ))}
           </div>

@@ -30,6 +30,22 @@
   --animate-tooltip-in-above: tooltip-in-above 0.12s ease-out forwards;
   --animate-cell-in: cell-in 0.25s ease-out both;
 
+  @keyframes now-playing-bar {
+    0%,
+    100% {
+      transform: scaleY(0.35);
+    }
+    25% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(0.5);
+    }
+    75% {
+      transform: scaleY(0.85);
+    }
+  }
+
   @keyframes tooltip-in {
     from {
       opacity: 0;
@@ -67,6 +83,20 @@
       opacity: 1;
       transform: scale(1);
     }
+  }
+}
+
+/* NowPlaying's "now playing" bars: a CSS animation (compositor thread only,
+   no JS on every frame) instead of framer-motion's useAnimationFrame. Each
+   bar sets --now-playing-duration inline for its own speed. With no motion
+   preference the bars hold a static height instead of animating. */
+.now-playing-bar {
+  transform-origin: bottom;
+  transform: scaleY(0.7);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .now-playing-bar {
+    animation: now-playing-bar var(--now-playing-duration, 1s) ease-in-out infinite;
   }
 }
 
