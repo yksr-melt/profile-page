@@ -5,6 +5,7 @@ import { GithubLogo } from '../components/BrandIcons'
 import { useGithubRepos } from '../hooks/useGithubRepos'
 import { projects, achievements } from '../data/mock'
 import { useLang, type MessageKey } from '../i18n'
+import { ServerStatus } from '../components/ServerStatus'
 
 const statusLabel: Record<string, MessageKey> = {
   active: 'status.active',
@@ -181,6 +182,8 @@ export function Product() {
           })}
         </div>
       </div>
+
+      <ServerStatus />
     </div>
   )
 }

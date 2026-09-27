@@ -85,6 +85,26 @@ export const messages = {
   },
   'notFound.home': { ja: 'ホームへ戻る', en: 'Back to home' },
 
+  'server.title': { ja: 'パフォーマンス', en: 'Performance' },
+  'server.description': {
+    ja: 'このサイトを動かしている自宅サーバーの、いまの様子。',
+    en: 'How the home server running this site is doing right now.',
+  },
+  'server.cpu': { ja: 'CPU', en: 'CPU' },
+  'server.memory': { ja: 'メモリ', en: 'Memory' },
+  'server.cores': { ja: '{n} コア', en: '{n} cores' },
+  'server.usage': { ja: '使用率', en: 'Utilization' },
+  'server.usageShort': { ja: '使用率', en: 'Utilization' },
+  'server.seconds': { ja: '{n} 秒', en: '{n} seconds' },
+  'server.temperature': { ja: '温度', en: 'Temperature' },
+  'server.uptime': { ja: '稼働時間', en: 'Up time' },
+  'server.days': { ja: '{n} 日', en: '{n} days' },
+  'server.load': { ja: 'ロード平均', en: 'Load average' },
+  'server.inUse': { ja: '使用中', en: 'In use' },
+  'server.total': { ja: '合計', en: 'Total' },
+  'server.unavailable': { ja: '取得できません', en: 'Unavailable' },
+  'server.stale': { ja: '最新の値を取得できていません。少し前の値を表示しています。', en: 'Could not get the latest values; showing the last ones received.' },
+
   'graph.less': { ja: '少', en: 'Less' },
   'graph.more': { ja: '多', en: 'More' },
 } satisfies Record<string, Record<Lang, string>>
