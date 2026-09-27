@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import { ExternalLink, Star, Award, Globe } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo } from '../components/BrandIcons'
@@ -46,7 +47,7 @@ export function Product() {
         {projects.map((p, i) => (
           <motion.div
             key={p.id}
-            initial={{ opacity: 0, y: 24 }}
+            initial={isHydrated() ? { opacity: 0, y: 24 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.45, delay: (i % 2) * 0.08 }}
@@ -112,7 +113,7 @@ export function Product() {
             href={r.url}
             target="_blank"
             rel="noreferrer"
-            initial={{ opacity: 0, y: 20 }}
+            initial={isHydrated() ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.4, delay: (i % 4) * 0.05 }}

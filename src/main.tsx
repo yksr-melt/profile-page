@@ -1,13 +1,15 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { LanguageProvider } from './components/LanguageProvider'
+import { tabFromPath } from './routes'
 
-createRoot(document.getElementById('root')!).render(
+hydrateRoot(
+  document.getElementById('root')!,
   <StrictMode>
     <LanguageProvider>
-      <App />
+      <App initialTab={tabFromPath(window.location.pathname)} />
     </LanguageProvider>
   </StrictMode>,
 )

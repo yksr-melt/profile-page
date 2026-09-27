@@ -1,22 +1,23 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BottomNav } from './components/BottomNav'
 import { Home } from './pages/Home'
+import { Product } from './pages/Product'
+import { Music } from './pages/Music'
+import { Me } from './pages/Me'
+import { Links } from './pages/Links'
 import { NotFound } from './pages/NotFound'
 import { useGithubSummary } from './hooks/useGithubSummary'
 import { useLastfmDashboard } from './hooks/useLastfmDashboard'
-import { useAppReady } from './hooks/useAppReady'
+import { isHydrated, markHydrated } from './hydration'
 import { TAB_ORDER, type Tab } from './types'
 import { TAB_PATHS, normalizePath, tabFromPath } from './routes'
 
-// Home is the landing tab, so it loads eagerly with the rest of the app.
-// The other tabs only matter once the user navigates to them, so they're
-// split into their own chunks and fetched on demand.
-const Product = lazy(() => import('./pages/Product').then((m) => ({ default: m.Product })))
-const Music = lazy(() => import('./pages/Music').then((m) => ({ default: m.Music })))
-const Me = lazy(() => import('./pages/Me').then((m) => ({ default: m.Me })))
-const Links = lazy(() => import('./pages/Links').then((m) => ({ default: m.Links })))
-
+// Every page is prerendered (scripts/prerender.js), so none of them can be
+// React.lazy() — a lazy import hasn't resolved yet at hydration time, and
+// hydrating into its Suspense fallback would throw away the prerendered
+// markup for whichever tab was requested. They're all small enough
+// (a few KB each) that this isn't a meaningful bundle-size cost.
 const pages: Record<Tab, React.ComponentType<{ onNavigate: (tab: Tab) => void }>> = {
   product: Product,
   music: Music,
@@ -30,46 +31,19 @@ function tabIndex(tab: Tab | null) {
   return TAB_ORDER.indexOf(tab ?? 'home')
 }
 
-function App() {
-  // null means the URL isn't one of our tabs; the server has already answered
-  // it with a 404, and we show the not-found page.
-  const [tab, setTab] = useState<Tab | null>(() => tabFromPath(window.location.pathname))
+function App({ initialTab }: { initialTab: Tab | null }) {
+  const [tab, setTab] = useState<Tab | null>(initialTab)
   const prevIndex = useRef(tabIndex(tab))
-  // Start these requests up front so their data is there whichever tab is
-  // opened first. The splash doesn't wait for them: the sections that use them
-  // draw skeletons of their final size and fill in when the data arrives.
+  // Fetched up front so the data is there whichever tab is open; the
+  // sections that use it draw a same-size skeleton until it arrives, rather
+  // than the whole app waiting on it (there's no splash to hold up: the
+  // page is already visible, prerendered).
   useGithubSummary()
   useLastfmDashboard()
-  const appReady = useAppReady()
 
   useEffect(() => {
-    if (!appReady) return
-    const loader = document.getElementById('app-loader')
-    if (!loader) return
-    loader.classList.add('is-hidden')
-    const timeout = setTimeout(() => loader.remove(), 400)
-    return () => clearTimeout(timeout)
-  }, [appReady])
-
-  // Once the app is up, use idle time to fetch the other tabs' chunks in the
-  // background. Keeps the initial bundle small (they're still code-split)
-  // while avoiding a chunk-download-and-parse stall the first time someone
-  // taps a tab — which shows up as a bad INP on slower devices.
-  useEffect(() => {
-    if (!appReady) return
-    const prefetch = () => {
-      import('./pages/Product')
-      import('./pages/Music')
-      import('./pages/Me')
-      import('./pages/Links')
-    }
-    if ('requestIdleCallback' in window) {
-      const id = requestIdleCallback(prefetch)
-      return () => cancelIdleCallback(id)
-    }
-    const timeout = setTimeout(prefetch, 1000)
-    return () => clearTimeout(timeout)
-  }, [appReady])
+    markHydrated()
+  }, [])
 
   // Drop a trailing slash (/music/ -> /music) so each tab has one URL.
   useEffect(() => {
@@ -112,15 +86,13 @@ function App() {
         <motion.main
           key={tab ?? 'not-found'}
           custom={direction}
-          initial={{ opacity: 0, x: direction * 24 }}
+          initial={isHydrated() ? { opacity: 0, x: direction * 24 } : false}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: direction * -24 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className="min-h-dvh pb-32"
         >
-          <Suspense fallback={null}>
-            <Page onNavigate={handleChange} />
-          </Suspense>
+          <Page onNavigate={handleChange} />
         </motion.main>
       </AnimatePresence>
 

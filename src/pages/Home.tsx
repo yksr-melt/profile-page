@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { isHydrated } from '../hydration'
 import { Boxes, Music2, User, Link2, Mail, Target } from 'lucide-react'
 import { ContributionGraph } from '../components/ContributionGraph'
 import { NowPlaying } from '../components/NowPlaying'
@@ -32,7 +33,7 @@ export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={isHydrated() ? { opacity: 0, y: 16 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8"

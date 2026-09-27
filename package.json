@@ -11,7 +11,7 @@
     "server": "node --watch server/index.js",
     "start": "node scripts/start.js",
     "dev:all": "npm run start",
-    "build": "tsc -b && vite build && node scripts/cache-bust-og-image.js",
+    "build": "tsc -b && vite build --outDir dist.new --emptyOutDir && vite build --ssr src/entry-server.tsx --outDir dist-ssr-build --emptyOutDir && node scripts/prerender.js dist.new dist-ssr-build/entry-server.js && node scripts/cache-bust-og-image.js dist.new && rm -rf dist-ssr-build && node scripts/swap-dist.js",
     "lint": "oxlint",
     "test": "node --test server/test/*.test.js",
     "preview": "vite preview"

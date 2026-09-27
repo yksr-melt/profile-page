@@ -4,10 +4,26 @@ import os from 'node:os'
 import path from 'node:path'
 import { after, before, describe, test } from 'node:test'
 import { createApp } from '../app.js'
-import { isAppPath } from '../routes.js'
+import { NOT_FOUND_FILE, fileForPath, isAppPath } from '../routes.js'
 
 function tempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'profile-page-test-'))
+}
+
+// A dist/ shaped like scripts/prerender.js actually produces: one HTML file
+// per tab plus 404.html, each with its own marker text so a test can tell
+// which one it got.
+function makeDist(distDir) {
+  fs.mkdirSync(distDir, { recursive: true })
+  const pages = { '': 'home', product: 'product', music: 'music', me: 'me', links: 'links' }
+  for (const [dir, marker] of Object.entries(pages)) {
+    const file = dir ? path.join(distDir, dir, 'index.html') : path.join(distDir, 'index.html')
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.writeFileSync(file, `<!doctype html><title>${marker}</title><div id="root"></div>`)
+  }
+  fs.writeFileSync(path.join(distDir, NOT_FOUND_FILE), '<!doctype html><title>404</title>')
+  fs.mkdirSync(path.join(distDir, 'assets'))
+  fs.writeFileSync(path.join(distDir, 'assets', 'app.js'), 'console.log(1)')
 }
 
 async function listen(app) {
@@ -47,6 +63,20 @@ describe('isAppPath', () => {
   })
 })
 
+describe('fileForPath', () => {
+  test('maps each tab path to its prerendered file', () => {
+    assert.equal(fileForPath('/'), 'index.html')
+    assert.equal(fileForPath('/product'), 'product/index.html')
+    assert.equal(fileForPath('/music/'), 'music/index.html')
+    assert.equal(fileForPath('/me'), 'me/index.html')
+    assert.equal(fileForPath('/links'), 'links/index.html')
+  })
+
+  test('null for anything not a tab path', () => {
+    for (const p of ['/typo', '/me/extra', '/Product']) assert.equal(fileForPath(p), null, p)
+  })
+})
+
 describe('routing', () => {
   let site
   // Under a hidden directory on purpose: send() refuses dotfile paths unless
@@ -54,28 +84,26 @@ describe('routing', () => {
   const distDir = path.join(tempDir(), '.checkout', 'dist')
 
   before(async () => {
-    fs.mkdirSync(distDir, { recursive: true })
-    fs.writeFileSync(path.join(distDir, 'index.html'), '<!doctype html><title>spa</title>')
-    fs.mkdirSync(path.join(distDir, 'assets'))
-    fs.writeFileSync(path.join(distDir, 'assets', 'app.js'), 'console.log(1)')
+    makeDist(distDir)
     site = await listen(createApp({ distDir, dataDir: tempDir(), sources: sourcesWith(fakeSource()) }))
   })
   after(() => site.close())
 
-  test('tab paths get the SPA with 200', async () => {
-    for (const p of ['/', '/music', '/me/', '/links']) {
-      const res = await fetch(site.url + p)
+  test('each tab path gets its own prerendered page, with 200, no trailing-slash redirect', async () => {
+    const expected = { '/': 'home', '/product': 'product', '/music/': 'music', '/me': 'me', '/links': 'links' }
+    for (const [p, title] of Object.entries(expected)) {
+      const res = await fetch(p === '/' ? site.url : site.url + p, { redirect: 'manual' })
       assert.equal(res.status, 200, p)
-      assert.match(await res.text(), /<title>spa<\/title>/, p)
+      assert.match(await res.text(), new RegExp(`<title>${title}</title>`), p)
     }
   })
 
-  test('unknown paths get the SPA with 404', async () => {
+  test('unknown paths get the not-found page, with 404', async () => {
     for (const p of ['/typo', '/me/extra']) {
       const res = await fetch(site.url + p)
       assert.equal(res.status, 404, p)
       assert.match(res.headers.get('content-type'), /text\/html/, p)
-      assert.match(await res.text(), /<title>spa<\/title>/, p)
+      assert.match(await res.text(), /<title>404<\/title>/, p)
     }
   })
 
@@ -83,10 +111,10 @@ describe('routing', () => {
     assert.equal((await fetch(site.url + '/assets/app.js')).status, 200)
     const res = await fetch(site.url + '/assets/missing.js')
     assert.equal(res.status, 404)
-    assert.doesNotMatch(await res.text(), /<title>spa<\/title>/)
+    assert.doesNotMatch(await res.text(), /<title>/)
   })
 
-  test('unknown API paths are a JSON 404, not the SPA', async () => {
+  test('unknown API paths are a JSON 404, not a page', async () => {
     const res = await fetch(site.url + '/api/nope')
     assert.equal(res.status, 404)
     assert.deepEqual(await res.json(), { error: 'not_found' })
