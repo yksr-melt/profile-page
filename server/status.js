@@ -50,6 +50,8 @@ const clampPercent = (n) => Math.min(100, Math.max(0, n))
 export function createStatusSampler({ probe = defaultProbe, intervalMs = 2000, size = 60, idleMs = 60 * 1000, now = Date.now } = {}) {
   const cpuHistory = []
   const memoryHistory = []
+  const temperatureHistory = []
+  const loadHistory = []
   let prev = null
   let timer = null
   let lastRead = 0
@@ -101,16 +103,19 @@ export function createStatusSampler({ probe = defaultProbe, intervalMs = 2000, s
     const uptime = safe(probe.uptime)
 
     // Coarse on purpose: uptime in whole days (seconds would give away when
-    // the server was last restarted, i.e. deployed), whole degrees and
-    // whole load numbers.
+    // the server was last restarted, i.e. deployed) and whole degrees. Load
+    // keeps one decimal: it usually sits below 1, so whole numbers would be a
+    // flat line at 0.
     latest = {
       cpu,
       memory,
       temperature: typeof temperature === 'number' ? Math.trunc(temperature) : null,
       uptimeDays: typeof uptime === 'number' ? Math.floor(uptime / 86400) : null,
-      load: Array.isArray(load) ? load.map((n) => Math.trunc(n)) : null,
+      load: Array.isArray(load) ? load.map((n) => Math.round(n * 10) / 10) : null,
       cores: safe(probe.cores),
     }
+    push(temperatureHistory, latest.temperature)
+    push(loadHistory, latest.load ? latest.load[0] : null)
 
     if (now() - lastRead > idleMs) stop()
   }
@@ -122,6 +127,8 @@ export function createStatusSampler({ probe = defaultProbe, intervalMs = 2000, s
     prev = null
     cpuHistory.length = 0
     memoryHistory.length = 0
+    temperatureHistory.length = 0
+    loadHistory.length = 0
     sample() // primes the CPU baseline; the first CPU value arrives next tick
     timer = setInterval(sample, intervalMs)
     timer.unref?.()
@@ -136,7 +143,16 @@ export function createStatusSampler({ probe = defaultProbe, intervalMs = 2000, s
     read() {
       lastRead = now()
       start()
-      return { intervalMs, ...latest, history: { cpu: [...cpuHistory], memory: [...memoryHistory] } }
+      return {
+        intervalMs,
+        ...latest,
+        history: {
+          cpu: [...cpuHistory],
+          memory: [...memoryHistory],
+          temperature: [...temperatureHistory],
+          load: [...loadHistory],
+        },
+      }
     },
     stop,
     // For tests.

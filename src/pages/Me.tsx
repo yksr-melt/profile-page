@@ -17,6 +17,7 @@ import {
   type SetupIcon,
 } from '../data/mock'
 import { useLang } from '../i18n'
+import { ServerStatus } from '../components/ServerStatus'
 
 const interestIcons: Record<InterestIcon, typeof Gamepad2> = {
   gamepad: Gamepad2,
@@ -259,6 +260,8 @@ export function Me() {
           ))}
         </div>
       </Card>
+
+      <ServerStatus />
     </div>
   )
 }

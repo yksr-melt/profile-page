@@ -5,22 +5,41 @@ import { useServerStatus, type ServerStatus as Status } from '../hooks/useServer
 import { useLang, type MessageKey } from '../i18n'
 
 // Windows Task Manager's "Performance" view: a list of resources on the left,
-// the selected one's usage graph on the right, and its details underneath.
+// the selected one's graph on the right, and its details underneath.
 // Colors never change with the value (a red "hot" state reads as "about to
 // break" and relies on color alone), so it's numbers and graphs only.
 
-type Resource = 'cpu' | 'memory'
+type Resource = 'cpu' | 'memory' | 'temperature' | 'load'
+
+const RESOURCES: Resource[] = ['cpu', 'memory', 'temperature', 'load']
 
 const COLORS: Record<Resource, { line: string; fill: string; border: string }> = {
   cpu: { line: '#1189d0', fill: 'rgba(17, 137, 208, 0.12)', border: 'border-[#1189d0]/40' },
   memory: { line: '#8b12ae', fill: 'rgba(139, 18, 174, 0.10)', border: 'border-[#8b12ae]/40' },
+  temperature: { line: '#c2410c', fill: 'rgba(194, 65, 12, 0.10)', border: 'border-[#c2410c]/40' },
+  load: { line: '#4d8a10', fill: 'rgba(77, 138, 16, 0.12)', border: 'border-[#4d8a10]/40' },
+}
+
+const TITLES: Record<Resource, MessageKey> = {
+  cpu: 'server.cpu',
+  memory: 'server.memory',
+  temperature: 'server.temperature',
+  load: 'server.load',
 }
 
 const HISTORY_SIZE = 60
 
+// The value at the top of each graph. Temperature is fixed at 100°C; load
+// average tops out at the core count (every core busy), which the axis label
+// spells out so graphs of the same height aren't read as the same thing.
+function graphMax(resource: Resource, s: Status) {
+  if (resource === 'load') return s.cores || 1
+  return 100
+}
+
 // Nulls (a sample the server couldn't take) break the line instead of being
-// drawn as 0%, which would look like the machine had stopped.
-function segments(values: (number | null)[]) {
+// drawn as 0, which would look like the machine had stopped.
+function segments(values: (number | null)[], max: number) {
   const padded = [...Array(Math.max(0, HISTORY_SIZE - values.length)).fill(null), ...values.slice(-HISTORY_SIZE)]
   const out: [number, number][][] = []
   let current: [number, number][] = []
@@ -29,25 +48,35 @@ function segments(values: (number | null)[]) {
       if (current.length) out.push(current)
       current = []
     } else {
-      current.push([(i / (HISTORY_SIZE - 1)) * 100, 100 - v])
+      current.push([(i / (HISTORY_SIZE - 1)) * 100, 100 - Math.min(100, (v / max) * 100)])
     }
   })
   if (current.length) out.push(current)
   return out
 }
 
-function Graph({ values, resource, grid = false }: { values: (number | null)[]; resource: Resource; grid?: boolean }) {
+function Graph({
+  values,
+  max,
+  resource,
+  grid = false,
+}: {
+  values: (number | null)[]
+  max: number
+  resource: Resource
+  grid?: boolean
+}) {
   const { line, fill } = COLORS[resource]
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full" aria-hidden="true">
       {grid &&
         Array.from({ length: 9 }).map((_, i) => (
-          <g key={i} stroke={line} strokeOpacity={0.12} vectorEffect="non-scaling-stroke">
+          <g key={i} stroke={line} strokeOpacity={0.12}>
             <line x1={0} x2={100} y1={(i + 1) * 10} y2={(i + 1) * 10} vectorEffect="non-scaling-stroke" />
             <line y1={0} y2={100} x1={(i + 1) * 10} x2={(i + 1) * 10} vectorEffect="non-scaling-stroke" />
           </g>
         ))}
-      {segments(values).map((points, i) => {
+      {segments(values, max).map((points, i) => {
         const path = points.map(([x, y]) => `${x},${y}`).join(' ')
         const area = `${points[0][0]},100 ${path} ${points[points.length - 1][0]},100`
         return (
@@ -70,8 +99,6 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
-const TITLES: Record<Resource, MessageKey> = { cpu: 'server.cpu', memory: 'server.memory' }
-
 export function ServerStatus() {
   const { t } = useLang()
   const reduceMotion = useReducedMotion()
@@ -91,19 +118,45 @@ export function ServerStatus() {
   const { data, error } = useServerStatus(onScreen)
   const unavailable = t('server.unavailable')
   const pct = (v: number | null | undefined) => (typeof v === 'number' ? `${Math.round(v)}%` : unavailable)
+  const celsius = (v: number | null | undefined) => (typeof v === 'number' ? `${v}°C` : unavailable)
+  const num = (v: number | null | undefined) => (typeof v === 'number' ? String(v) : unavailable)
 
-  const summary = (resource: Resource, s: Status | null) =>
-    resource === 'cpu'
-      ? pct(s?.cpu)
-      : s?.memory
-        ? `${s.memory.usedGiB}/${s.memory.totalGiB} GB (${Math.round(s.memory.percent)}%)`
-        : unavailable
+  const summary = (resource: Resource, s: Status) => {
+    switch (resource) {
+      case 'cpu':
+        return pct(s.cpu)
+      case 'memory':
+        return s.memory ? `${s.memory.usedGiB}/${s.memory.totalGiB} GB (${Math.round(s.memory.percent)}%)` : unavailable
+      case 'temperature':
+        return celsius(s.temperature)
+      case 'load':
+        return num(s.load?.[0])
+    }
+  }
 
-  const history = (resource: Resource) => data?.history[resource] ?? []
+  // The label at the top of the graph's scale.
+  const topLabel = (resource: Resource, s: Status) => {
+    switch (resource) {
+      case 'temperature':
+        return '100°C'
+      case 'load':
+        return t('server.loadMax', { n: graphMax('load', s) })
+      default:
+        return '100%'
+    }
+  }
+
+  const graphLabel: Record<Resource, MessageKey> = {
+    cpu: 'server.usage',
+    memory: 'server.usage',
+    temperature: 'server.temperature',
+    load: 'server.load1',
+  }
+
   const showGraphs = !reduceMotion
 
   return (
-    <div ref={ref} className="mt-8 rounded-3xl border border-ink-200/60 bg-white p-5 shadow-softer">
+    <div ref={ref} className="mb-4 rounded-3xl border border-ink-200/60 bg-white p-5 shadow-softer">
       <div className="mb-1 flex items-center gap-1.5">
         <Activity size={15} className="text-accent-400" />
         <h3 className="text-sm font-black text-ink-900">{t('server.title')}</h3>
@@ -115,20 +168,20 @@ export function ServerStatus() {
 
       {data && (
         <div className="flex flex-col gap-4 sm:flex-row">
-          {/* Resource list (left column on wide screens, tabs on phones) */}
-          <div className="flex gap-2 sm:w-40 sm:shrink-0 sm:flex-col">
-            {(['cpu', 'memory'] as const).map((resource) => (
+          {/* Resource list (left column on wide screens, a 2x2 grid on phones) */}
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:w-44 sm:shrink-0 sm:flex-col">
+            {RESOURCES.map((resource) => (
               <button
                 key={resource}
                 aria-pressed={selected === resource}
                 onClick={() => setSelected(resource)}
-                className={`flex flex-1 items-center gap-2 rounded-2xl border px-3 py-2 text-left transition sm:flex-none ${
+                className={`flex items-center gap-2 rounded-2xl border px-3 py-2 text-left transition ${
                   selected === resource ? `${COLORS[resource].border} bg-ink-50` : 'border-transparent'
                 }`}
               >
                 {showGraphs && (
                   <span className={`h-8 w-12 shrink-0 overflow-hidden rounded border ${COLORS[resource].border}`}>
-                    <Graph values={history(resource)} resource={resource} />
+                    <Graph values={data.history[resource] ?? []} max={graphMax(resource, data)} resource={resource} />
                   </span>
                 )}
                 <span className="min-w-0">
@@ -143,7 +196,7 @@ export function ServerStatus() {
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-baseline justify-between">
               <p className="text-xl font-black text-ink-900">{t(TITLES[selected])}</p>
-              {data.cores !== null && selected === 'cpu' && (
+              {data.cores !== null && (selected === 'cpu' || selected === 'load') && (
                 <p className="text-[10px] font-bold text-ink-400">{t('server.cores', { n: data.cores })}</p>
               )}
               {data.memory && selected === 'memory' && (
@@ -154,11 +207,16 @@ export function ServerStatus() {
             {showGraphs && (
               <>
                 <div className="flex justify-between text-[10px] text-ink-400">
-                  <span>{t('server.usage')}</span>
-                  <span>100%</span>
+                  <span>{t(graphLabel[selected])}</span>
+                  <span>{topLabel(selected, data)}</span>
                 </div>
                 <div className={`h-36 border ${COLORS[selected].border}`}>
-                  <Graph values={history(selected)} resource={selected} grid />
+                  <Graph
+                    values={data.history[selected] ?? []}
+                    max={graphMax(selected, data)}
+                    resource={selected}
+                    grid
+                  />
                 </div>
                 <div className="mb-3 flex justify-between text-[10px] text-ink-400">
                   <span>{t('server.seconds', { n: Math.round((HISTORY_SIZE * data.intervalMs) / 1000) })}</span>
@@ -168,24 +226,29 @@ export function ServerStatus() {
             )}
 
             <div className="grid grid-cols-3 gap-3">
-              {selected === 'cpu' ? (
+              {selected === 'cpu' && (
                 <>
                   <Stat label={t('server.usageShort')} value={pct(data.cpu)} />
-                  <Stat
-                    label={t('server.temperature')}
-                    value={data.temperature !== null ? `${data.temperature}°C` : unavailable}
-                  />
                   <Stat
                     label={t('server.uptime')}
                     value={data.uptimeDays !== null ? t('server.days', { n: data.uptimeDays }) : unavailable}
                   />
-                  <Stat label={t('server.load')} value={data.load ? data.load.join(' / ') : unavailable} />
+                  <Stat label={t('server.coresLabel')} value={num(data.cores)} />
                 </>
-              ) : (
+              )}
+              {selected === 'memory' && (
                 <>
                   <Stat label={t('server.inUse')} value={data.memory ? `${data.memory.usedGiB} GB` : unavailable} />
                   <Stat label={t('server.total')} value={data.memory ? `${data.memory.totalGiB} GB` : unavailable} />
                   <Stat label={t('server.usageShort')} value={pct(data.memory?.percent)} />
+                </>
+              )}
+              {selected === 'temperature' && <Stat label={t('server.current')} value={celsius(data.temperature)} />}
+              {selected === 'load' && (
+                <>
+                  <Stat label={t('server.load1')} value={num(data.load?.[0])} />
+                  <Stat label={t('server.load5')} value={num(data.load?.[1])} />
+                  <Stat label={t('server.load15')} value={num(data.load?.[2])} />
                 </>
               )}
             </div>

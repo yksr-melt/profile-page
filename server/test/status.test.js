@@ -42,15 +42,17 @@ describe('status sampler', () => {
     assert.deepEqual(s.history.cpu, [null, 25])
   })
 
-  test('values are coarse: whole days, whole degrees, whole load', () => {
+  test('values are coarse: whole days, whole degrees, load to 0.1', () => {
     const status = createStatusSampler({ probe: fakeProbe() })
     const s = status.read()
     status.stop()
     assert.equal(s.uptimeDays, 3)
     assert.equal(s.temperature, 48)
-    assert.deepEqual(s.load, [0, 1, 2])
+    assert.deepEqual(s.load, [0.9, 1.5, 2])
     assert.deepEqual(s.memory, { totalGiB: 4, usedGiB: 1, percent: 25 })
     assert.equal(s.cores, 4)
+    assert.deepEqual(s.history.temperature, [48])
+    assert.deepEqual(s.history.load, [0.9])
   })
 
   test('a failing reading becomes null instead of breaking the sample', () => {
@@ -68,6 +70,8 @@ describe('status sampler', () => {
     assert.equal(s.uptimeDays, null)
     assert.equal(s.load, null)
     assert.deepEqual(s.history.memory, [null])
+    assert.deepEqual(s.history.temperature, [null])
+    assert.deepEqual(s.history.load, [null])
   })
 
   test('history keeps only the last `size` samples', () => {
@@ -103,6 +107,8 @@ describe('status sampler', () => {
     status.stop()
     assert.equal(s.history.cpu.length, 1)
     assert.equal(s.history.memory.length, 1)
+    assert.equal(s.history.temperature.length, 1)
+    assert.equal(s.history.load.length, 1)
   })
 })
 
@@ -117,7 +123,7 @@ describe('/api/status', () => {
       assert.equal(res.headers.get('cache-control'), 'no-store')
       const body = await res.json()
       assert.deepEqual(Object.keys(body).sort(), ['cores', 'cpu', 'history', 'intervalMs', 'load', 'memory', 'temperature', 'uptimeDays'])
-      assert.deepEqual(Object.keys(body.history).sort(), ['cpu', 'memory'])
+      assert.deepEqual(Object.keys(body.history).sort(), ['cpu', 'load', 'memory', 'temperature'])
       const text = JSON.stringify(body)
       assert.ok(!text.includes(os.hostname()), 'hostname leaked')
       assert.ok(!text.includes('/'), 'path leaked')

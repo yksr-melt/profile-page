@@ -8,7 +8,12 @@ export type ServerStatus = {
   uptimeDays: number | null
   load: number[] | null
   cores: number | null
-  history: { cpu: (number | null)[]; memory: (number | null)[] }
+  history: {
+    cpu: (number | null)[]
+    memory: (number | null)[]
+    temperature: (number | null)[]
+    load: (number | null)[]
+  }
 }
 
 const DEFAULT_INTERVAL_MS = 2000
