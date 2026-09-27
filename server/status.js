@@ -117,7 +117,11 @@ export function createStatusSampler({ probe = defaultProbe, intervalMs = 2000, s
 
   function start() {
     if (timer) return
+    // A fresh start: samples from before the idle stop would otherwise show
+    // up as "the last two minutes".
     prev = null
+    cpuHistory.length = 0
+    memoryHistory.length = 0
     sample() // primes the CPU baseline; the first CPU value arrives next tick
     timer = setInterval(sample, intervalMs)
     timer.unref?.()

@@ -72,6 +72,7 @@ describe('status sampler', () => {
 
   test('history keeps only the last `size` samples', () => {
     const status = createStatusSampler({ probe: fakeProbe(), size: 3 })
+    status.read()
     for (let i = 0; i < 5; i++) status.sample()
     assert.equal(status.read().history.cpu.length, 3)
     status.stop()
@@ -86,6 +87,22 @@ describe('status sampler', () => {
     t = 5000
     status.sample()
     assert.equal(status.running, false)
+  })
+
+  test('restarting after an idle stop starts the history from scratch', () => {
+    let t = 0
+    const status = createStatusSampler({ probe: fakeProbe(), idleMs: 1000, now: () => t })
+    status.read()
+    for (let i = 0; i < 5; i++) status.sample()
+    t = 5000
+    status.sample() // nobody has read for a while: stops
+    assert.equal(status.running, false)
+
+    t = 3 * 60 * 60 * 1000
+    const s = status.read()
+    status.stop()
+    assert.equal(s.history.cpu.length, 1)
+    assert.equal(s.history.memory.length, 1)
   })
 })
 
