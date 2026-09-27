@@ -33,14 +33,11 @@ export function createVisitCounter({ store, now = Date.now }) {
     read: () => store.read(),
     // Records a visit for `ip` if it hasn't already counted today. Returns
     // the stats either way, so a repeat visitor still gets the current total.
-    async record(ip) {
+    record(ip) {
       rollToToday()
       if (!ip || seen.has(hash(ip))) return store.read()
       seen.add(hash(ip))
-      const stats = store.read()
-      stats.visits = (stats.visits || 0) + 1
-      await store.write(stats)
-      return stats
+      return store.update((stats) => ({ ...stats, visits: (stats.visits || 0) + 1 }))
     },
   }
 }

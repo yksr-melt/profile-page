@@ -303,16 +303,24 @@ export function createApp({
   now,
   status = createStatusSampler(),
   rateLimit = {},
+  statusRateLimit = {},
 } = {}) {
   const app = express()
   const lastGood = createLastGoodStore(path.join(dataDir, 'last-good.json'))
   const cached = createCache({ lastGood, now })
   const visits = createVisitCounter({ store: createStatsStore(path.join(dataDir, 'stats.json')), now })
 
-  // A script hammering an endpoint is the main thing this defends against;
-  // ordinary use (a page load plus the status panel polling every 2s) stays
-  // well under this.
-  app.use('/api', createRateLimiter({ now, ...rateLimit }))
+  // A script hammering an endpoint is the main thing this defends against.
+  // /api/status is exempt from this general budget and has its own, looser
+  // one: it's polled every 2s while the panel is open (30/min per visitor,
+  // so two tabs or two visitors alone would trip a 60/min shared budget),
+  // and answering it never costs an extra upstream request — the sampler
+  // measures on its own timer regardless of how many people are reading it.
+  app.use(
+    '/api',
+    createRateLimiter({ now, skip: (req) => req.path === '/status', ...rateLimit }),
+  )
+  app.use('/api/status', createRateLimiter({ now, max: 120, ...statusRateLimit }))
 
   // ---------- Visit counter ----------
   // Counted once per IP per day (server/visit-counter.js): the IP itself
