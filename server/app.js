@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCache, createLastGoodStore } from './cache.js'
 import { isAppPath } from './routes.js'
+import { createStatusSampler } from './status.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -290,7 +291,13 @@ const defaultSources = {
   },
 }
 
-export function createApp({ distDir = DIST_DIR, dataDir = DATA_DIR, sources = defaultSources, now } = {}) {
+export function createApp({
+  distDir = DIST_DIR,
+  dataDir = DATA_DIR,
+  sources = defaultSources,
+  now,
+  status = createStatusSampler(),
+} = {}) {
   const app = express()
   const cached = createCache({ lastGood: createLastGoodStore(path.join(dataDir, 'last-good.json')), now })
 
@@ -346,6 +353,18 @@ export function createApp({ distDir = DIST_DIR, dataDir = DATA_DIR, sources = de
   app.get('/api/github/summary', upstreamRoute('github:summary'))
   app.get('/api/github/repos', upstreamRoute('github:repos'))
   app.get('/api/lastfm/dashboard', upstreamRoute('lastfm:dashboard'))
+
+  // ---------- Server status ----------
+  // Shared samples (see status.js), so polling visitors don't add load.
+  app.get('/api/status', (req, res) => {
+    res.set('Cache-Control', 'no-store')
+    try {
+      res.json(status.read())
+    } catch (err) {
+      console.error(`[status] ${err.message}`)
+      res.status(503).json({ error: 'status_unavailable' })
+    }
+  })
 
   // Unknown API paths are a JSON 404, never the SPA.
   app.use('/api', (req, res) => {
