@@ -8,8 +8,8 @@
       "en": "Just a student who loves programming and music. Ruled by Node.js."
     },
     "aboutText": {
-      "ja": "プログラミングと音楽が好きな学生です。最近は色々なジャンルの音楽を聴き漁りながら、自分のための小さなツールやBotをNode.js/TypeScriptで作るのに夢中になっています。好奇心旺盛で気になったことにはすぐ手を出す一方、いざ作り始めると細部まで詰めたくなる完璧主義な一面もあり、基本的には自分のペースでこつこつ進めるタイプです。",
-      "en": "I'm a student who loves programming and music. Lately I've been digging through all kinds of music while building small tools and bots for myself with Node.js/TypeScript. I'm curious and jump into anything that catches my interest, but once I start building I turn into a perfectionist who wants every detail right. I generally work steadily at my own pace."
+      "ja": "学生やってるらしいです。discordとTwitterをメインに生きてます。プログラミングと音楽が好きです。ジャンルに偏りはあるものの、色々な曲聴きます。たくさん話しかけてくれると嬉しいです。",
+      "en": "Apparently, I’m a student. I mainly live on Discord and Twitter. I’m into programming and music. I listen to all kinds of music, though I definitely have my genre preferences. Feel free to talk to me a lot—I’d love that!"
     },
     "contactEmails": [
       { "label": "General", "email": "melt@ibutya.com" }
@@ -30,6 +30,7 @@
       "items": [
         "future bass",
         "future core",
+        "future bounce",
         { "ja": "ゲーム音楽", "en": "Game music" },
         { "ja": "ボカロ", "en": "Vocaloid" }
       ]
