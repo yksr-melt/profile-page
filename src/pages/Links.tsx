@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { isHydrated } from '../hydration'
-import { ArrowUpRight, Mail, Target } from 'lucide-react'
+import { ArrowUpRight, Mail, Target, Heart } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { links, type LinkIcon } from '../data/mock'
@@ -12,6 +12,7 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
   discord: DiscordLogo,
   mail: Mail,
   osu: Target,
+  heart: Heart,
 }
 
 export function Links() {
