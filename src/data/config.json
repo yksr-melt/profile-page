@@ -372,14 +372,22 @@
       "handle": "@melt_takanashi",
       "url": "https://x.com/melt_takanashi",
       "icon": "x",
-      "color": "from-sky-300 to-cyan-400"
+      "color": "from-sky-300 to-cyan-400",
+      "note": {
+        "ja": "ゆるい呟きはこっち",
+        "en": "Where I post casually"
+      }
     },
     {
       "name": "X (鍵垢)",
       "handle": "@ibutya0319",
       "url": "https://x.com/ibutya0319",
       "icon": "x",
-      "color": "from-slate-400 to-sky-400"
+      "color": "from-slate-400 to-sky-400",
+      "note": {
+        "ja": "基本的にフォローリクエストは通さないかも",
+        "en": "I usually don't accept follow requests here"
+      }
     },
     {
       "name": "Discord",
@@ -400,14 +408,22 @@
       "handle": "discord.gg/y44wBbBgHt",
       "url": "https://discord.gg/y44wBbBgHt",
       "icon": "discord",
-      "color": "from-indigo-500 to-blue-400"
+      "color": "from-indigo-500 to-blue-400",
+      "note": {
+        "ja": "Meltype の質問・要望・雑談はここへ",
+        "en": "Questions, requests and chat about Meltype"
+      }
     },
     {
       "name": "GitHub Sponsors",
       "handle": "@yksr-melt",
       "url": "https://github.com/sponsors/yksr-melt",
       "icon": "heart",
-      "color": "from-pink-400 to-fuchsia-400"
+      "color": "from-pink-400 to-fuchsia-400",
+      "note": {
+        "ja": "いただいた支援は Meltype などの開発に使います",
+        "en": "Your support goes into developing Meltype and more"
+      }
     }
   ]
 }

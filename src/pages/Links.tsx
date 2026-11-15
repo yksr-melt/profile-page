@@ -17,7 +17,7 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
 }
 
 export function Links() {
-  const { t } = useLang()
+  const { t, l: lt } = useLang()
   const { data: invites } = useDiscordInvites()
   const membersLabel = (url: string) => {
     const n = discordMembers(invites, url)
@@ -51,6 +51,7 @@ export function Links() {
               <div className="min-w-0 flex-1">
                 <p className="font-black text-ink-900">{l.name}</p>
                 <p className="truncate text-xs text-ink-400">{l.handle}{membersLabel(l.url)}</p>
+                {l.note && <p className="mt-0.5 text-xs leading-snug text-ink-500">{lt(l.note)}</p>}
               </div>
               <ArrowUpRight size={16} className="shrink-0 text-ink-300" />
             </motion.a>

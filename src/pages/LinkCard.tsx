@@ -50,7 +50,7 @@ export function LinkCard() {
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-3 rounded-full border border-ink-200/60 bg-white p-2 pr-5 shadow-softer transition hover:-translate-y-0.5 active:scale-[0.98]"
+                  className="flex items-center gap-3 rounded-[28px] border border-ink-200/60 bg-white p-2 pr-5 shadow-softer transition hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   <span
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${link.color} text-white`}
@@ -60,6 +60,7 @@ export function LinkCard() {
                   <span className="min-w-0 flex-1">
                     <span className="block font-black text-ink-900">{link.name}</span>
                     <span className="block truncate text-xs text-ink-400">{link.handle}{membersLabel(link.url)}</span>
+                    {link.note && <span className="mt-0.5 block text-xs leading-snug text-ink-500">{l(link.note)}</span>}
                   </span>
                   <ArrowUpRight size={16} className="shrink-0 text-ink-300" />
                 </a>

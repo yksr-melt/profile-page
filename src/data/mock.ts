@@ -21,6 +21,8 @@ export type SiteLink = {
   url: string
   icon: LinkIcon
   color: string
+  /** A short message shown under the link (optional). */
+  note?: Text
 }
 
 export type Playlist = {
