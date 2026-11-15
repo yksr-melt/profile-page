@@ -368,6 +368,20 @@
       "color": "from-sky-400 to-blue-400"
     },
     {
+      "name": "X (サブ)",
+      "handle": "@melt_takanashi",
+      "url": "https://x.com/melt_takanashi",
+      "icon": "x",
+      "color": "from-sky-300 to-cyan-400"
+    },
+    {
+      "name": "X (鍵垢)",
+      "handle": "@ibutya0319",
+      "url": "https://x.com/ibutya0319",
+      "icon": "x",
+      "color": "from-slate-400 to-sky-400"
+    },
+    {
       "name": "Discord",
       "handle": "yksr_melt",
       "url": "https://discord.com/users/1495715303898742897",
