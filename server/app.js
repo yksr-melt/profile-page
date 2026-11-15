@@ -9,7 +9,7 @@ import { createRateLimiter } from './rate-limit.js'
 import { createStatsStore } from './stats-store.js'
 import { trustedClientIp } from './request-ip.js'
 import { createVisitCounter } from './visit-counter.js'
-import { NOT_FOUND_FILE, fileForPath } from './routes.js'
+import { LINK_CARD_FILE, NOT_FOUND_FILE, fileForPath } from './routes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -296,6 +296,10 @@ const defaultSources = {
   },
 }
 
+function isLinkHost(hostname) {
+  return Boolean(hostname?.startsWith('link.'))
+}
+
 export function createApp({
   distDir = DIST_DIR,
   dataDir = DATA_DIR,
@@ -306,6 +310,13 @@ export function createApp({
   statusRateLimit = {},
 } = {}) {
   const app = express()
+
+  // links.ibutya.com is an alias: send it to link.ibutya.com, keeping the path
+  // and query. Before everything else, so the API isn't reachable there either.
+  app.use((req, res, next) => {
+    if (!req.hostname?.startsWith('links.')) return next()
+    res.redirect(301, `https://link.${req.hostname.slice('links.'.length)}${req.originalUrl}`)
+  })
   const lastGood = createLastGoodStore(path.join(dataDir, 'last-good.json'))
   const cached = createCache({ lastGood, now })
   const visits = createVisitCounter({ store: createStatsStore(path.join(dataDir, 'stats.json')), now })
@@ -409,7 +420,8 @@ export function createApp({
     })
     app.get(/.*/, async (req, res, next) => {
       try {
-        const file = fileForPath(req.path)
+        // link.ibutya.com is a single page: every path shows the link card.
+        const file = isLinkHost(req.hostname) ? LINK_CARD_FILE : fileForPath(req.path)
         // Read on every request (a few ms at most): a rebuild swaps these
         // files and the assets they name together, so a copy kept in memory
         // would point at files that no longer exist until the next restart.

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { NOT_FOUND_FILE } from '../server/routes.js'
+import { LINK_CARD_FILE, NOT_FOUND_FILE } from '../server/routes.js'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -21,12 +21,12 @@ if (!template.includes(ROOT_PLACEHOLDER)) {
   throw new Error(`prerender: expected exactly ${JSON.stringify(ROOT_PLACEHOLDER)} in ${templatePath}`)
 }
 
-const { render } = await import(pathToFileURL(path.resolve(ssrEntry)).href)
+const { render, renderLinkCard } = await import(pathToFileURL(path.resolve(ssrEntry)).href)
 
-function write(relFile, html) {
+function write(relFile, html, rootAttrs = '') {
   const dest = path.join(distDir, relFile)
   fs.mkdirSync(path.dirname(dest), { recursive: true })
-  fs.writeFileSync(dest, template.replace(ROOT_PLACEHOLDER, `<div id="root">${html}</div>`))
+  fs.writeFileSync(dest, template.replace(ROOT_PLACEHOLDER, `<div id="root"${rootAttrs}>${html}</div>`))
   console.log(`prerender: wrote ${relFile}`)
 }
 
@@ -41,3 +41,7 @@ for (const [tab, routePath] of Object.entries(routes)) {
 const probe = render('/\u0000not-a-real-route')
 if (!probe.notFound) throw new Error('prerender: expected the not-found probe path to not resolve to a tab')
 write(NOT_FOUND_FILE, probe.html)
+
+// The link.ibutya.com page. data-page tells src/main.tsx which component to
+// hydrate it with.
+write(LINK_CARD_FILE, renderLinkCard(), ' data-page="link"')
