@@ -1,7 +1,7 @@
 import { ArrowUpRight, Mail, Target, Heart } from 'lucide-react'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { LanguageToggle } from '../components/LanguageToggle'
-import { links, site, type LinkIcon } from '../data/mock'
+import { links, site, websites, type LinkIcon } from '../data/mock'
 import { useLang } from '../i18n'
 import { discordMembers, useDiscordInvites } from '../hooks/useDiscordInvites'
 
@@ -40,6 +40,23 @@ export function LinkCard() {
         <h1 className="text-2xl font-black tracking-tight text-ink-900">{site.name}</h1>
         <p className="mb-3 text-sm font-bold text-ink-500">{l(site.role)}</p>
         <p className="mb-8 text-center text-sm leading-relaxed text-ink-600">{l(site.homeIntro)}</p>
+
+        <ul className="mb-6 grid w-full grid-cols-2 gap-3">
+          {websites.map((w) => (
+            <li key={w.url}>
+              <a
+                href={w.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-full flex-col rounded-[28px] border border-ink-200/60 bg-white p-4 shadow-softer transition hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                <span className="mb-1 text-2xl">{w.emoji}</span>
+                <span className="font-black text-ink-900">{w.name}</span>
+                {w.note && <span className="mt-0.5 text-xs leading-snug text-ink-500">{l(w.note)}</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
 
         <ul className="flex w-full flex-col gap-3">
           {links.map((link) => {

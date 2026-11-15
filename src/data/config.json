@@ -1,10 +1,7 @@
 {
   "site": {
-    "name": "ibutya",
-    "role": {
-      "ja": "Programmer / Student",
-      "en": "Programmer / Student"
-    },
+    "name": "雪代 / Yukishiro",
+    "role": "nu!!!",
     "pronouns": "he/him",
     "homeIntro": {
       "ja": "プログラミングと音楽が好きなそこらへんの学生。日本語入力 Meltype を作ってます。Node.jsに支配されてます。",
@@ -350,6 +347,26 @@
       "status": "active",
       "github": "https://github.com/yksr-melt/Spotify-Viewer",
       "emoji": "🎶"
+    }
+  ],
+  "websites": [
+    {
+      "name": "ibutya.com",
+      "url": "https://ibutya.com",
+      "emoji": "🌸",
+      "note": {
+        "ja": "プロフィールと作ったもの",
+        "en": "Profile and things I've made"
+      }
+    },
+    {
+      "name": "meltype.moe",
+      "url": "https://meltype.moe",
+      "emoji": "❄️",
+      "note": {
+        "ja": "日本語入力 Meltype の公式サイト",
+        "en": "Official site of the Meltype input method"
+      }
     }
   ],
   "links": [

@@ -25,6 +25,13 @@ export type SiteLink = {
   note?: Text
 }
 
+export type Website = {
+  name: string
+  url: string
+  emoji: string
+  note?: Text
+}
+
 export type Playlist = {
   name: string
   url: string
@@ -105,5 +112,7 @@ const emailLinks: SiteLink[] = contactEmails.map(({ label, email }) => ({
   icon: 'mail',
   color: 'from-amber-400 to-yellow-300',
 }))
+
+export const websites = config.websites as Website[]
 
 export const links = [...(config.links as SiteLink[]), ...emailLinks]
