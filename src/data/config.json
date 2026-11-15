@@ -419,6 +419,13 @@
       "color": "from-pink-400 to-rose-400"
     },
     {
+      "name": "Last.fm",
+      "handle": "ibutya0319",
+      "url": "https://www.last.fm/user/ibutya0319",
+      "icon": "music",
+      "color": "from-red-500 to-rose-400"
+    },
+    {
       "name": "Meltype Discord",
       "handle": "discord.gg/y44wBbBgHt",
       "url": "https://discord.gg/y44wBbBgHt",

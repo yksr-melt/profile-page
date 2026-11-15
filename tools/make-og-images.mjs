@@ -29,6 +29,9 @@ function page(body) {
     background: radial-gradient(circle at 15% 0%, #ffd9ea, transparent 45%), radial-gradient(circle at 100% 100%, #ffe4f0, transparent 45%), #fff7fb; }
   .card { position: absolute; inset: 56px; border-radius: 48px; background: #fff; box-shadow: 0 24px 60px -20px #f5a3c8;
     display: flex; align-items: center; gap: 56px; padding: 0 72px; }
+  .avatar { position: relative; flex-shrink: 0; }
+  .badge { position: absolute; right: 0; bottom: 8px; width: 60px; height: 60px; border-radius: 50%; background: #fff;
+    box-shadow: 0 6px 16px -6px #f5a3c8; display: flex; align-items: center; justify-content: center; font-size: 34px; }
   img { width: 220px; height: 220px; border-radius: 50%; border: 8px solid #f9a8cf; object-fit: cover; flex-shrink: 0; }
   .eyebrow { color: #ec4899; font-size: 30px; font-weight: 900; letter-spacing: .12em; }
   h1 { margin: 4px 0 6px; font-size: 76px; font-weight: 900; color: #831843; }
@@ -36,7 +39,7 @@ function page(body) {
   .bio { color: #9d174d; font-size: 40px; font-weight: 700; }
   .pills { display: flex; flex-wrap: wrap; gap: 12px; }
   .pill { padding: 10px 24px; border-radius: 999px; background: #fdf0f6; color: #9d174d; font-size: 26px; font-weight: 700; }
-</style></head><body><div class="card"><img src="${avatar}"><div>${body}</div></div></body></html>`
+</style></head><body><div class="card"><div class="avatar"><img src="${avatar}"><span class="badge">🦈</span></div><div>${body}</div></div></body></html>`
 }
 
 const images = {

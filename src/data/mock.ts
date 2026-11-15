@@ -13,7 +13,7 @@ export type Project = {
   emoji: string
 }
 
-export type LinkIcon = 'github' | 'x' | 'discord' | 'mail' | 'osu' | 'heart'
+export type LinkIcon = 'github' | 'x' | 'discord' | 'mail' | 'osu' | 'heart' | 'music'
 
 export type SiteLink = {
   name: string

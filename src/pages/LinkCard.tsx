@@ -1,4 +1,4 @@
-import { ArrowUpRight, Mail, Target, Heart } from 'lucide-react'
+import { ArrowUpRight, Mail, Target, Heart, Music } from 'lucide-react'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { LanguageToggle } from '../components/LanguageToggle'
 import { links, site, websites, type LinkIcon } from '../data/mock'
@@ -12,6 +12,7 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
   mail: Mail,
   osu: Target,
   heart: Heart,
+  music: Music,
 }
 
 /**
