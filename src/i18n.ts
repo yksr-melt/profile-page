@@ -75,6 +75,7 @@ export const messages = {
   'me.wantToTry': { ja: 'してみたいこと', en: 'Things I want to try' },
   'me.setup': { ja: '使ってる環境', en: 'My setup' },
 
+  'links.members': { ja: '人', en: 'members' },
   'links.title': { ja: 'リンク集', en: 'Links' },
   'links.description': { ja: '各種SNS・外部サービスへの入口。', en: 'Where to find me on social media and other services.' },
 

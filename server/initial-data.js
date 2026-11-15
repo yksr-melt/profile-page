@@ -6,6 +6,7 @@
 const EMBEDDED = {
   '/api/github/summary': 'github:summary',
   '/api/lastfm/dashboard': 'lastfm:dashboard',
+  '/api/discord/invites': 'discord:invites',
 }
 
 export function initialData(lastGood) {

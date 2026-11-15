@@ -12,6 +12,7 @@ import { createVisitCounter } from './visit-counter.js'
 import { LINK_CARD_FILE, NOT_FOUND_FILE, fileForPath } from './routes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const CONFIG_FILE = path.join(__dirname, '..', 'src', 'data', 'config.json')
 
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
@@ -273,6 +274,29 @@ async function fetchLastfmDashboard() {
   }
 }
 
+// ---------- Discord ----------
+
+// Invite codes of the discord.gg links in config.json. Discord's public invite
+// API gives a server's member counts without a bot or a token.
+export function discordInviteCodes(links) {
+  return links.flatMap((link) => {
+    const match = /^https:\/\/discord\.gg\/([\w-]+)$/.exec(link.url)
+    return match ? [match[1]] : []
+  })
+}
+
+async function fetchDiscordInvites() {
+  const { links } = JSON.parse(await fs.promises.readFile(CONFIG_FILE, 'utf-8'))
+  const result = {}
+  for (const code of discordInviteCodes(links)) {
+    const res = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`)
+    if (!res.ok) throw new Error(`Discord invite ${code}: HTTP ${res.status}`)
+    const data = await res.json()
+    result[code] = { members: data.approximate_member_count, online: data.approximate_presence_count }
+  }
+  return result
+}
+
 // ---------- App ----------
 
 const DIST_DIR = path.join(__dirname, '..', 'dist')
@@ -293,6 +317,11 @@ const defaultSources = {
     configured: () => Boolean(LASTFM_API_KEY && LASTFM_USERNAME),
     ttlMs: 2 * 60 * 1000,
     fetch: fetchLastfmDashboard,
+  },
+  'discord:invites': {
+    configured: () => true,
+    ttlMs: 10 * 60 * 1000,
+    fetch: fetchDiscordInvites,
   },
 }
 
@@ -369,6 +398,7 @@ export function createApp({
   app.get('/api/github/summary', upstreamRoute('github:summary'))
   app.get('/api/github/repos', upstreamRoute('github:repos'))
   app.get('/api/lastfm/dashboard', upstreamRoute('lastfm:dashboard'))
+  app.get('/api/discord/invites', upstreamRoute('discord:invites'))
 
   // ---------- Server status ----------
   // Shared samples (see status.js), so polling visitors don't add load.

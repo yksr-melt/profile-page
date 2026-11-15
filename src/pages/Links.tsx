@@ -5,6 +5,7 @@ import { PageHeader } from '../components/PageHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { links, type LinkIcon } from '../data/mock'
 import { useLang } from '../i18n'
+import { discordMembers, useDiscordInvites } from '../hooks/useDiscordInvites'
 
 const linkIcons: Record<LinkIcon, IconComponent> = {
   github: GithubLogo,
@@ -17,6 +18,11 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
 
 export function Links() {
   const { t } = useLang()
+  const { data: invites } = useDiscordInvites()
+  const membersLabel = (url: string) => {
+    const n = discordMembers(invites, url)
+    return n === null ? '' : ` · ${n.toLocaleString()} ${t('links.members')}`
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
@@ -44,7 +50,7 @@ export function Links() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-black text-ink-900">{l.name}</p>
-                <p className="truncate text-xs text-ink-400">{l.handle}</p>
+                <p className="truncate text-xs text-ink-400">{l.handle}{membersLabel(l.url)}</p>
               </div>
               <ArrowUpRight size={16} className="shrink-0 text-ink-300" />
             </motion.a>

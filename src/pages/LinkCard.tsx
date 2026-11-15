@@ -3,6 +3,7 @@ import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../component
 import { LanguageToggle } from '../components/LanguageToggle'
 import { links, site, type LinkIcon } from '../data/mock'
 import { useLang } from '../i18n'
+import { discordMembers, useDiscordInvites } from '../hooks/useDiscordInvites'
 
 const linkIcons: Record<LinkIcon, IconComponent> = {
   github: GithubLogo,
@@ -19,7 +20,12 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
  * the /links tab without the rest of the site around it.
  */
 export function LinkCard() {
-  const { l } = useLang()
+  const { l, t } = useLang()
+  const { data: invites } = useDiscordInvites()
+  const membersLabel = (url: string) => {
+    const n = discordMembers(invites, url)
+    return n === null ? '' : ` · ${n.toLocaleString()} ${t('links.members')}`
+  }
 
   return (
     <div className="relative min-h-dvh bg-ink-50">
@@ -53,7 +59,7 @@ export function LinkCard() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-black text-ink-900">{link.name}</span>
-                    <span className="block truncate text-xs text-ink-400">{link.handle}</span>
+                    <span className="block truncate text-xs text-ink-400">{link.handle}{membersLabel(link.url)}</span>
                   </span>
                   <ArrowUpRight size={16} className="shrink-0 text-ink-300" />
                 </a>

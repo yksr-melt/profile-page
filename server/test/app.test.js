@@ -4,7 +4,7 @@ import http from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { after, before, describe, test } from 'node:test'
-import { createApp } from '../app.js'
+import { createApp, discordInviteCodes } from '../app.js'
 import { LINK_CARD_FILE, NOT_FOUND_FILE, fileForPath, isAppPath } from '../routes.js'
 
 function tempDir() {
@@ -363,5 +363,16 @@ describe('upstream failures', () => {
     } finally {
       site.close()
     }
+  })
+})
+
+describe('discordInviteCodes', () => {
+  test('takes the codes of discord.gg links only', () => {
+    const links = [
+      { url: 'https://discord.gg/y44wBbBgHt' },
+      { url: 'https://discord.com/users/1495715303898742897' },
+      { url: 'https://github.com/yksr-melt' },
+    ]
+    assert.deepEqual(discordInviteCodes(links), ['y44wBbBgHt'])
   })
 })

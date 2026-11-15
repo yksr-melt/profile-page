@@ -145,6 +145,13 @@
       }
     },
     {
+      "name": "EmoCosine",
+      "genre": {
+        "ja": "ゲーム音楽",
+        "en": "Game music"
+      }
+    },
+    {
       "name": "TEMPLIME",
       "genre": "electronic"
     }
