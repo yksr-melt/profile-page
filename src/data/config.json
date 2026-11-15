@@ -385,7 +385,7 @@
       "icon": "x",
       "color": "from-slate-400 to-sky-400",
       "note": {
-        "ja": "基本的にフォローリクエストは通さないかも",
+        "ja": "基本的にフォロリクは通さないかも",
         "en": "I usually don't accept follow requests here"
       }
     },

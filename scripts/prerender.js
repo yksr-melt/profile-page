@@ -23,10 +23,10 @@ if (!template.includes(ROOT_PLACEHOLDER)) {
 
 const { render, renderLinkCard } = await import(pathToFileURL(path.resolve(ssrEntry)).href)
 
-function write(relFile, html, rootAttrs = '') {
+function write(relFile, html, { rootAttrs = '', head = template } = {}) {
   const dest = path.join(distDir, relFile)
   fs.mkdirSync(path.dirname(dest), { recursive: true })
-  fs.writeFileSync(dest, template.replace(ROOT_PLACEHOLDER, `<div id="root"${rootAttrs}>${html}</div>`))
+  fs.writeFileSync(dest, head.replace(ROOT_PLACEHOLDER, `<div id="root"${rootAttrs}>${html}</div>`))
   console.log(`prerender: wrote ${relFile}`)
 }
 
@@ -44,4 +44,20 @@ write(NOT_FOUND_FILE, probe.html)
 
 // The link.ibutya.com page. data-page tells src/main.tsx which component to
 // hydrate it with.
-write(LINK_CARD_FILE, renderLinkCard(), ' data-page="link"')
+// Its own title, URL and preview image (public/og-link.png, made by
+// tools/make-og-link.mjs), so a shared link.ibutya.com doesn't look like the
+// main site.
+const LINK_TITLE = 'ibutya | Links'
+const LINK_DESCRIPTION = 'ゆきしろの各種SNS・連絡先へのリンク集。'
+function linkCardHead(html) {
+  const replaced = html
+    .replace(/(<title>|"og:title" content="|"twitter:title" content=")[^<"]*/g, `$1${LINK_TITLE}`)
+    .replace(/("description" content="|"og:description" content="|"twitter:description" content=")[^"]*/g, `$1${LINK_DESCRIPTION}`)
+    .replace('"og:url" content="https://ibutya.com"', '"og:url" content="https://link.ibutya.com"')
+    .replaceAll('https://ibutya.com/og-image.png', 'https://link.ibutya.com/og-link.png')
+  if (replaced.includes('og-image.png') || !replaced.includes(LINK_TITLE)) {
+    throw new Error('prerender: index.html <head> no longer matches what linkCardHead() expects')
+  }
+  return replaced
+}
+write(LINK_CARD_FILE, renderLinkCard(), { rootAttrs: ' data-page="link"', head: linkCardHead(template) })
