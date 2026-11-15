@@ -28,7 +28,6 @@ export type SiteLink = {
 export type Website = {
   name: string
   url: string
-  emoji: string
   note?: Text
 }
 

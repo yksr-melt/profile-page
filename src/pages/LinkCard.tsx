@@ -50,7 +50,6 @@ export function LinkCard() {
                 rel="noreferrer"
                 className="flex h-full flex-col rounded-[28px] border border-ink-200/60 bg-white p-4 shadow-softer transition hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                <span className="mb-1 text-2xl">{w.emoji}</span>
                 <span className="font-black text-ink-900">{w.name}</span>
                 {w.note && <span className="mt-0.5 text-xs leading-snug text-ink-500">{l(w.note)}</span>}
               </a>

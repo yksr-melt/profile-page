@@ -353,19 +353,17 @@
     {
       "name": "ibutya.com",
       "url": "https://ibutya.com",
-      "emoji": "🌸",
       "note": {
-        "ja": "プロフィールと作ったもの",
-        "en": "Profile and things I've made"
+        "ja": "私についてのプロフィール",
+        "en": "My profile"
       }
     },
     {
       "name": "meltype.moe",
       "url": "https://meltype.moe",
-      "emoji": "❄️",
       "note": {
-        "ja": "日本語入力 Meltype の公式サイト",
-        "en": "Official site of the Meltype input method"
+        "ja": "全角と半角の壁を溶かす日本語入力「Meltype」公式サイト",
+        "en": "Official site of Meltype, the Japanese input method that melts the wall between full-width and half-width"
       }
     }
   ],

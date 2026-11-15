@@ -45,7 +45,7 @@ write(NOT_FOUND_FILE, probe.html)
 // The link.ibutya.com page. data-page tells src/main.tsx which component to
 // hydrate it with.
 // Its own title, URL and preview image (public/og-link.png, made by
-// tools/make-og-link.mjs), so a shared link.ibutya.com doesn't look like the
+// tools/make-og-images.mjs), so a shared link.ibutya.com doesn't look like the
 // main site.
 const LINK_TITLE = 'ibutya | Links'
 const LINK_DESCRIPTION = 'ゆきしろの各種SNS・連絡先へのリンク集。'
