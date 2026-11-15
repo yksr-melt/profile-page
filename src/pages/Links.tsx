@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import { isHydrated } from '../hydration'
-import { ArrowUpRight, Mail, Target } from 'lucide-react'
+import { ArrowUpRight, Mail, Target, Heart, Music } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
 import { GithubLogo, XLogo, DiscordLogo, type IconComponent } from '../components/BrandIcons'
 import { links, type LinkIcon } from '../data/mock'
 import { useLang } from '../i18n'
+import { discordMembers, useDiscordInvites } from '../hooks/useDiscordInvites'
 
 const linkIcons: Record<LinkIcon, IconComponent> = {
   github: GithubLogo,
@@ -12,10 +13,17 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
   discord: DiscordLogo,
   mail: Mail,
   osu: Target,
+  heart: Heart,
+  music: Music,
 }
 
 export function Links() {
-  const { t } = useLang()
+  const { t, l: lt } = useLang()
+  const { data: invites } = useDiscordInvites()
+  const membersLabel = (url: string) => {
+    const n = discordMembers(invites, url)
+    return n === null ? '' : ` · ${n.toLocaleString()} ${t('links.members')}`
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-10 pb-6">
@@ -43,7 +51,8 @@ export function Links() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-black text-ink-900">{l.name}</p>
-                <p className="truncate text-xs text-ink-400">{l.handle}</p>
+                <p className="truncate text-xs text-ink-400">{l.handle}{membersLabel(l.url)}</p>
+                {l.note && <p className="mt-0.5 text-xs leading-snug text-ink-500">{lt(l.note)}</p>}
               </div>
               <ArrowUpRight size={16} className="shrink-0 text-ink-300" />
             </motion.a>

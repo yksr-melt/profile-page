@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
+import http from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { after, before, describe, test } from 'node:test'
-import { createApp } from '../app.js'
-import { NOT_FOUND_FILE, fileForPath, isAppPath } from '../routes.js'
+import { createApp, discordInviteCodes } from '../app.js'
+import { LINK_CARD_FILE, NOT_FOUND_FILE, fileForPath, isAppPath } from '../routes.js'
 
 function tempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'profile-page-test-'))
@@ -22,6 +23,7 @@ function makeDist(distDir) {
     fs.writeFileSync(file, `<!doctype html><title>${marker}</title><div id="root"></div>`)
   }
   fs.writeFileSync(path.join(distDir, NOT_FOUND_FILE), '<!doctype html><title>404</title>')
+  fs.writeFileSync(path.join(distDir, LINK_CARD_FILE), '<!doctype html><title>link</title><div id="root"></div>')
   fs.mkdirSync(path.join(distDir, 'assets'))
   fs.writeFileSync(path.join(distDir, 'assets', 'app.js'), 'console.log(1)')
 }
@@ -118,6 +120,44 @@ describe('routing', () => {
     const res = await fetch(site.url + '/api/nope')
     assert.equal(res.status, 404)
     assert.deepEqual(await res.json(), { error: 'not_found' })
+  })
+})
+
+// fetch() won't set Host, so these go through node:http.
+function getWithHost(url, host, p) {
+  return new Promise((resolve, reject) => {
+    http
+      .get(url + p, { headers: { host } }, (res) => {
+        let body = ''
+        res.on('data', (c) => (body += c))
+        res.on('end', () => resolve({ status: res.statusCode, location: res.headers.location, body }))
+      })
+      .on('error', reject)
+  })
+}
+
+describe('link.ibutya.com', () => {
+  let site
+  before(async () => {
+    const distDir = path.join(tempDir(), 'dist')
+    makeDist(distDir)
+    site = await listen(createApp({ distDir, dataDir: tempDir(), sources: sourcesWith(fakeSource()) }))
+  })
+  after(() => site.close())
+
+  test('link. serves the link card on every path; the main host is unchanged', async () => {
+    for (const p of ['/', '/links', '/anything']) {
+      const res = await getWithHost(site.url, 'link.ibutya.com', p)
+      assert.equal(res.status, 200, p)
+      assert.match(res.body, /<title>link<\/title>/, p)
+    }
+    assert.match((await getWithHost(site.url, 'ibutya.com', '/')).body, /<title>home<\/title>/)
+  })
+
+  test('links. redirects to link., keeping the path and query', async () => {
+    const res = await getWithHost(site.url, 'links.ibutya.com', '/foo?a=1')
+    assert.equal(res.status, 301)
+    assert.equal(res.location, 'https://link.ibutya.com/foo?a=1')
   })
 })
 
@@ -323,5 +363,16 @@ describe('upstream failures', () => {
     } finally {
       site.close()
     }
+  })
+})
+
+describe('discordInviteCodes', () => {
+  test('takes the codes of discord.gg links only', () => {
+    const links = [
+      { url: 'https://discord.gg/y44wBbBgHt' },
+      { url: 'https://discord.com/users/1495715303898742897' },
+      { url: 'https://github.com/yksr-melt' },
+    ]
+    assert.deepEqual(discordInviteCodes(links), ['y44wBbBgHt'])
   })
 })

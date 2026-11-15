@@ -13,7 +13,7 @@ export type Project = {
   emoji: string
 }
 
-export type LinkIcon = 'github' | 'x' | 'discord' | 'mail' | 'osu'
+export type LinkIcon = 'github' | 'x' | 'discord' | 'mail' | 'osu' | 'heart' | 'music'
 
 export type SiteLink = {
   name: string
@@ -21,6 +21,14 @@ export type SiteLink = {
   url: string
   icon: LinkIcon
   color: string
+  /** A short message shown under the link (optional). */
+  note?: Text
+}
+
+export type Website = {
+  name: string
+  url: string
+  note?: Text
 }
 
 export type Playlist = {
@@ -103,5 +111,7 @@ const emailLinks: SiteLink[] = contactEmails.map(({ label, email }) => ({
   icon: 'mail',
   color: 'from-amber-400 to-yellow-300',
 }))
+
+export const websites = config.websites as Website[]
 
 export const links = [...(config.links as SiteLink[]), ...emailLinks]

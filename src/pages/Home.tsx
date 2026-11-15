@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { isHydrated } from '../hydration'
-import { Boxes, Music2, User, Link2, Mail, Target } from 'lucide-react'
+import { Boxes, Music2, User, Link2, Mail, Target, Heart, Music } from 'lucide-react'
 import { ContributionGraph } from '../components/ContributionGraph'
 import { NowPlaying } from '../components/NowPlaying'
 import { Reveal } from '../components/Reveal'
@@ -21,6 +21,8 @@ const linkIcons: Record<LinkIcon, IconComponent> = {
   discord: DiscordLogo,
   mail: Mail,
   osu: Target,
+  heart: Heart,
+  music: Music,
 }
 
 export function Home({ onNavigate }: { onNavigate: (tab: Tab) => void }) {

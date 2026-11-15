@@ -26,6 +26,8 @@
 
 `oshi` は `name` / `from` / `emoji` / `image` / `url`、`favoriteArtists` は `name` / `genre` / `image` / `url` が使える(`name` 以外は省略可)。
 
+`links` は `name` / `handle` / `url` / `icon` / `color` のほか、ボタンの下に出すひとこと `note` を書ける(省略可)。`discord.gg/...` のリンクにはサーバーの人数が自動で付く。`websites` (`name` / `url` / `note`) は link.ibutya.com の上に並ぶサイトの欄。links は `/links` タブと link.ibutya.com の両方に出る(links.ibutya.com は link.ibutya.com へリダイレクト)。
+
 ## セットアップ
 
 Node.js 20以上が必要(`.nvmrc`参照)。

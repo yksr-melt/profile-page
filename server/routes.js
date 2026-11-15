@@ -30,3 +30,6 @@ export function fileForPath(pathname) {
   if (!APP_PATHS.has(normalized)) return null
   return normalized === '/' ? 'index.html' : `${normalized.slice(1)}/index.html`
 }
+
+// The lit.link-style page served at link.ibutya.com (see server/app.js).
+export const LINK_CARD_FILE = 'link-card.html'

@@ -1,8 +1,7 @@
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { NOT_FOUND_FILE } from '../server/routes.js'
 
 // Cloudflare and link-preview bots (Discord, etc.) cache og-image.png under
 // its plain URL, so a new image doesn't show up in existing/new link
@@ -16,21 +15,15 @@ if (!distDir) {
   process.exit(1)
 }
 
-const routes = JSON.parse(readFileSync(path.join(root, 'src', 'data', 'routes.json'), 'utf-8'))
-// Every prerendered page shares the same <head>, so the same og:image tag
-// (and the same hash) appears in all of them.
-const files = [...Object.values(routes), NOT_FOUND_FILE].map((p) =>
-  p === '/' ? 'index.html' : p === NOT_FOUND_FILE ? p : `${p.slice(1)}/index.html`,
-)
+// Every prerendered page names one of these preview images.
+const htmlFiles = readdirSync(distDir, { recursive: true }).filter((f) => f.endsWith('.html'))
 
-const imagePath = path.join(root, 'public', 'og-image.png')
-const hash = createHash('md5').update(readFileSync(imagePath)).digest('hex').slice(0, 8)
-
-for (const file of files) {
-  const filePath = path.join(distDir, file)
-  const html = readFileSync(filePath, 'utf-8')
-  const updated = html.replace(/og-image\.png(\?v=[a-z0-9]+)?/g, `og-image.png?v=${hash}`)
-  writeFileSync(filePath, updated)
+for (const image of ['og-image.png', 'og-link.png']) {
+  const hash = createHash('md5').update(readFileSync(path.join(root, 'public', image))).digest('hex').slice(0, 8)
+  const pattern = new RegExp(`${image.replace('.', '\\.')}(\\?v=[a-z0-9]+)?`, 'g')
+  for (const file of htmlFiles) {
+    const filePath = path.join(distDir, file)
+    writeFileSync(filePath, readFileSync(filePath, 'utf-8').replace(pattern, `${image}?v=${hash}`))
+  }
+  console.log(`${image} cache-busted with hash ${hash} in ${htmlFiles.length} files`)
 }
-
-console.log(`og-image.png cache-busted with hash ${hash} in ${files.length} files`)

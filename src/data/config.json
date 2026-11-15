@@ -1,18 +1,21 @@
 {
   "site": {
-    "name": "ibutya",
-    "role": { "ja": "Programmer / Student", "en": "Programmer / Student" },
+    "name": "雪代 / Yukishiro",
+    "role": "nu!!!",
     "pronouns": "he/him",
     "homeIntro": {
-      "ja": "プログラミングと音楽が好きなそこらへんの学生。Node.jsに支配されてます。",
-      "en": "Just a student who loves programming and music. Ruled by Node.js."
+      "ja": "プログラミングと音楽が好きなそこらへんの学生。日本語入力 Meltype を作ってます。Node.jsに支配されてます。",
+      "en": "Just a student who loves programming and music. Building the Japanese input method Meltype. Ruled by Node.js."
     },
     "aboutText": {
-      "ja": "学生やってるらしいです。discordとTwitterをメインに生きてます。プログラミングと音楽が好きです。ジャンルに偏りはあるものの、色々な曲聴きます。たくさん話しかけてくれると嬉しいです。",
-      "en": "Apparently, I’m a student. I mainly live on Discord and Twitter. I’m into programming and music. I listen to all kinds of music, though I definitely have my genre preferences. Feel free to talk to me a lot—I’d love that!"
+      "ja": "学生やってるらしいです。discordとTwitterをメインに生きてます。プログラミングと音楽が好きです。ジャンルに偏りはあるものの、色々な曲聴きます。たくさん話しかけてくれると嬉しいです。最近は、英語と日本語を切り替えずに打てる日本語入力「Meltype」を作っています。",
+      "en": "Apparently, I’m a student. I mainly live on Discord and Twitter. I’m into programming and music. I listen to all kinds of music, though I definitely have my genre preferences. Feel free to talk to me a lot—I’d love that! These days I'm building Meltype, a Japanese input method that lets you type English and Japanese without switching modes."
     },
     "contactEmails": [
-      { "label": "General", "email": "melt@ibutya.com" }
+      {
+        "label": "General",
+        "email": "melt@ibutya.com"
+      }
     ]
   },
   "skills": [
@@ -25,54 +28,185 @@
   ],
   "interests": [
     {
-      "category": { "ja": "音楽", "en": "Music" },
+      "category": {
+        "ja": "音楽",
+        "en": "Music"
+      },
       "icon": "music",
       "items": [
         "future bass",
         "future core",
         "future bounce",
-        { "ja": "ゲーム音楽", "en": "Game music" },
-        { "ja": "ボカロ", "en": "Vocaloid" }
+        {
+          "ja": "ゲーム音楽",
+          "en": "Game music"
+        },
+        {
+          "ja": "ボカロ",
+          "en": "Vocaloid"
+        }
       ]
     },
     {
-      "category": { "ja": "アニメ", "en": "Anime" },
+      "category": {
+        "ja": "アニメ",
+        "en": "Anime"
+      },
       "icon": "clapperboard",
       "items": [
-        { "ja": "ぼっち・ざ・ろっく！", "en": "Bocchi the Rock!" },
-        { "ja": "リコリス・リコイル", "en": "Lycoris Recoil" },
-        { "ja": "超かぐや姫！", "en": "Cosmic Princess Kaguya!" }
+        {
+          "ja": "ぼっち・ざ・ろっく！",
+          "en": "Bocchi the Rock!"
+        },
+        {
+          "ja": "リコリス・リコイル",
+          "en": "Lycoris Recoil"
+        },
+        {
+          "ja": "超かぐや姫！",
+          "en": "Cosmic Princess Kaguya!"
+        }
       ]
     },
     {
-      "category": { "ja": "趣味", "en": "Hobbies" },
+      "category": {
+        "ja": "趣味",
+        "en": "Hobbies"
+      },
       "icon": "sparkles",
       "items": [
-        { "ja": "プログラミング", "en": "Programming" },
-        { "ja": "DTM（ちょっとだけ）", "en": "DTM (just a little)" }
+        {
+          "ja": "プログラミング",
+          "en": "Programming"
+        },
+        {
+          "ja": "DTM（ちょっとだけ）",
+          "en": "DTM (just a little)"
+        }
       ]
     }
   ],
-  "oshi": [],
-  "favoriteArtists": [],
+  "oshi": [
+    {
+      "name": {
+        "ja": "月宿クド",
+        "en": "Tsukiyado Kudo"
+      },
+      "from": "VTuber",
+      "emoji": "🌙"
+    },
+    {
+      "name": {
+        "ja": "しぐれうい",
+        "en": "Shigure Ui"
+      },
+      "from": "VTuber",
+      "emoji": "☂️"
+    }
+  ],
+  "favoriteArtists": [
+    {
+      "name": "Picco",
+      "genre": "future bass"
+    },
+    {
+      "name": {
+        "ja": "ヨルシカ",
+        "en": "Yorushika"
+      },
+      "genre": "J-Rock"
+    },
+    {
+      "name": {
+        "ja": "ずっと真夜中でいいのに。",
+        "en": "ZUTOMAYO"
+      },
+      "genre": "J-Pop"
+    },
+    {
+      "name": "Orangestar",
+      "genre": "Vocaloid"
+    },
+    {
+      "name": "Nor",
+      "genre": "future bass"
+    },
+    {
+      "name": {
+        "ja": "ミツキヨ",
+        "en": "Mitsukiyo"
+      },
+      "genre": {
+        "ja": "ゲーム音楽",
+        "en": "Game music"
+      }
+    },
+    {
+      "name": "EmoCosine",
+      "genre": {
+        "ja": "ゲーム音楽",
+        "en": "Game music"
+      }
+    },
+    {
+      "name": "TEMPLIME",
+      "genre": "electronic"
+    }
+  ],
   "currentGames": [
-    { "name": "osu!", "since": "2024〜" },
-    { "name": { "ja": "雀魂", "en": "Mahjong Soul" }, "since": "2023〜" },
-    { "name": "Revolution Idle", "since": "2025〜" },
-    { "name": "tetrio", "since": "2025〜" },
-    { "name": { "ja": "ブルアカ", "en": "Blue Archive" }, "since": "2025.11.07〜" },
-    { "name": { "ja": "学マス", "en": "Gakuen iDOLM@STER" }, "since": "2026.08.16〜" }
+    {
+      "name": "osu!",
+      "since": "2024〜"
+    },
+    {
+      "name": {
+        "ja": "雀魂",
+        "en": "Mahjong Soul"
+      },
+      "since": "2023〜"
+    },
+    {
+      "name": "Revolution Idle",
+      "since": "2025〜"
+    },
+    {
+      "name": "tetrio",
+      "since": "2025〜"
+    },
+    {
+      "name": {
+        "ja": "ブルアカ",
+        "en": "Blue Archive"
+      },
+      "since": "2025.11.07〜"
+    },
+    {
+      "name": {
+        "ja": "学マス",
+        "en": "Gakuen iDOLM@STER"
+      },
+      "since": "2026.08.16〜"
+    }
   ],
   "wantToTry": [
     "DJ",
-    { "ja": "自作OSをスマホに焼く", "en": "Flash my own OS onto a phone" }
+    {
+      "ja": "自作OSをスマホに焼く",
+      "en": "Flash my own OS onto a phone"
+    }
   ],
   "specialSkills": [
-    { "ja": "パソコンを触ると壊れる", "en": "Computers break when I touch them" }
+    {
+      "ja": "パソコンを触ると壊れる",
+      "en": "Computers break when I touch them"
+    }
   ],
   "achievements": [
     {
-      "title": { "ja": "Homebrew (brew.sh) 日本語訳", "en": "Homebrew (brew.sh) Japanese translation" },
+      "title": {
+        "ja": "Homebrew (brew.sh) 日本語訳",
+        "en": "Homebrew (brew.sh) Japanese translation"
+      },
       "description": {
         "ja": "パッケージマネージャー Homebrew の公式サイトの日本語訳を担当。",
         "en": "Translated the official website of the Homebrew package manager into Japanese."
@@ -81,7 +215,10 @@
       "emoji": "🍺"
     },
     {
-      "title": { "ja": "TypeScript のバグ修正", "en": "Bug fixes in TypeScript" },
+      "title": {
+        "ja": "TypeScript のバグ修正",
+        "en": "Bug fixes in TypeScript"
+      },
       "description": {
         "ja": "microsoft/TypeScript にコントリビュート。import文の補完のフィルタリングと、オブジェクトプロパティ補完のクォート設定の不具合を修正。",
         "en": "Contributed to microsoft/TypeScript: fixed import statement completion filtering and made object property completions respect the quote preference."
@@ -92,20 +229,50 @@
   ],
   "setup": [
     {
-      "group": { "ja": "メイン", "en": "Main" },
+      "group": {
+        "ja": "メイン",
+        "en": "Main"
+      },
       "icon": "laptop",
       "specs": [
-        { "label": { "ja": "機種", "en": "Model" }, "value": "MacBook Air (2020)" },
-        { "label": "RAM", "value": "8GB" },
-        { "label": { "ja": "ブラウザ", "en": "Browser" }, "value": "Firefox" }
+        {
+          "label": {
+            "ja": "機種",
+            "en": "Model"
+          },
+          "value": "MacBook Air (2020)"
+        },
+        {
+          "label": "RAM",
+          "value": "8GB"
+        },
+        {
+          "label": {
+            "ja": "ブラウザ",
+            "en": "Browser"
+          },
+          "value": "Firefox"
+        }
       ]
     },
     {
-      "group": { "ja": "サーバー", "en": "Server" },
+      "group": {
+        "ja": "サーバー",
+        "en": "Server"
+      },
       "icon": "server",
       "specs": [
-        { "label": { "ja": "機種", "en": "Model" }, "value": "Raspberry Pi 4 Model B" },
-        { "label": "OS", "value": "Debian" }
+        {
+          "label": {
+            "ja": "機種",
+            "en": "Model"
+          },
+          "value": "Raspberry Pi 4 Model B"
+        },
+        {
+          "label": "OS",
+          "value": "Debian"
+        }
       ]
     }
   ],
@@ -119,13 +286,33 @@
   ],
   "projects": [
     {
+      "id": "meltype",
+      "name": "Meltype",
+      "description": {
+        "ja": "雪解けのように、半角/全角の壁を溶かす日本語入力。英語と日本語をモード切り替えなしで打てる。Windows・macOS・Linux 対応。",
+        "en": "A Japanese input method that melts the wall between half-width and full-width: type English and Japanese without switching modes. Windows, macOS and Linux."
+      },
+      "tags": [
+        "C#",
+        "IME",
+        "Mozc"
+      ],
+      "status": "active",
+      "github": "https://github.com/yksr-melt/Meltype",
+      "emoji": "❄️",
+      "featured": true
+    },
+    {
       "id": "meltty",
       "name": "meltty",
       "description": {
         "ja": "macOS上で複数のターミナル（TTY）とプロセスをリアルタイム監視できるTUI",
         "en": "A TUI for monitoring multiple terminals (TTYs) and processes on macOS in real time."
       },
-      "tags": ["TypeScript", "TUI"],
+      "tags": [
+        "TypeScript",
+        "TUI"
+      ],
       "status": "active",
       "github": "https://github.com/yksr-melt/meltty",
       "emoji": "🧊"
@@ -137,7 +324,10 @@
         "ja": "サーバー運営を支援するDiscord Bot。",
         "en": "A Discord bot that helps run servers."
       },
-      "tags": ["Node.js", "discord.js"],
+      "tags": [
+        "Node.js",
+        "discord.js"
+      ],
       "status": "active",
       "github": "https://github.com/yksr-melt/melt-bot",
       "emoji": "🤖"
@@ -149,16 +339,113 @@
         "ja": "同期歌詞・BPM/キー・再生数を1画面にまとめた、Spotifyの「いま再生中」ディスプレイ。",
         "en": "A Spotify now-playing display with synced lyrics, BPM/key and play counts on one screen."
       },
-      "tags": ["Node.js", "Spotify API", "Last.fm"],
+      "tags": [
+        "Node.js",
+        "Spotify API",
+        "Last.fm"
+      ],
       "status": "active",
       "github": "https://github.com/yksr-melt/Spotify-Viewer",
       "emoji": "🎶"
     }
   ],
+  "websites": [
+    {
+      "name": "ibutya.com",
+      "url": "https://ibutya.com",
+      "note": {
+        "ja": "私についてのプロフィール",
+        "en": "My profile"
+      }
+    },
+    {
+      "name": "meltype.moe",
+      "url": "https://meltype.moe",
+      "note": {
+        "ja": "全角と半角の壁を溶かす日本語入力「Meltype」公式サイト",
+        "en": "Official site of Meltype, the Japanese input method that melts the wall between full-width and half-width"
+      }
+    }
+  ],
   "links": [
-    { "name": "GitHub", "handle": "@yksr-melt", "url": "https://github.com/yksr-melt", "icon": "github", "color": "from-neutral-700 to-neutral-500" },
-    { "name": "X", "handle": "@yksr_melt", "url": "https://x.com/yksr_melt", "icon": "x", "color": "from-sky-400 to-blue-400" },
-    { "name": "Discord", "handle": "yksr_melt", "url": "https://discord.com/users/1495715303898742897", "icon": "discord", "color": "from-indigo-400 to-violet-400" },
-    { "name": "osu!", "handle": "ibutya", "url": "https://osu.ppy.sh/users/35323526", "icon": "osu", "color": "from-pink-400 to-rose-400" }
+    {
+      "name": "GitHub",
+      "handle": "@yksr-melt",
+      "url": "https://github.com/yksr-melt",
+      "icon": "github",
+      "color": "from-neutral-700 to-neutral-500"
+    },
+    {
+      "name": "X",
+      "handle": "@yksr_melt",
+      "url": "https://x.com/yksr_melt",
+      "icon": "x",
+      "color": "from-sky-400 to-blue-400"
+    },
+    {
+      "name": "X (サブ)",
+      "handle": "@melt_takanashi",
+      "url": "https://x.com/melt_takanashi",
+      "icon": "x",
+      "color": "from-sky-300 to-cyan-400",
+      "note": {
+        "ja": "ゆるい呟きはこっち",
+        "en": "Where I post casually"
+      }
+    },
+    {
+      "name": "X (鍵垢)",
+      "handle": "@ibutya0319",
+      "url": "https://x.com/ibutya0319",
+      "icon": "x",
+      "color": "from-slate-400 to-sky-400",
+      "note": {
+        "ja": "基本的にフォロリクは通さないかも",
+        "en": "I usually don't accept follow requests here"
+      }
+    },
+    {
+      "name": "Discord",
+      "handle": "yksr_melt",
+      "url": "https://discord.com/users/1495715303898742897",
+      "icon": "discord",
+      "color": "from-indigo-400 to-violet-400"
+    },
+    {
+      "name": "osu!",
+      "handle": "ibutya",
+      "url": "https://osu.ppy.sh/users/35323526",
+      "icon": "osu",
+      "color": "from-pink-400 to-rose-400"
+    },
+    {
+      "name": "Last.fm",
+      "handle": "ibutya0319",
+      "url": "https://www.last.fm/user/ibutya0319",
+      "icon": "music",
+      "color": "from-red-500 to-rose-400"
+    },
+    {
+      "name": "Meltype Discord",
+      "handle": "discord.gg/y44wBbBgHt",
+      "url": "https://discord.gg/y44wBbBgHt",
+      "icon": "discord",
+      "color": "from-indigo-500 to-blue-400",
+      "note": {
+        "ja": "Meltype の質問・要望・雑談はここへ",
+        "en": "Questions, requests and chat about Meltype"
+      }
+    },
+    {
+      "name": "GitHub Sponsors",
+      "handle": "@yksr-melt",
+      "url": "https://github.com/sponsors/yksr-melt",
+      "icon": "heart",
+      "color": "from-pink-400 to-fuchsia-400",
+      "note": {
+        "ja": "いただいた支援は Meltype などの開発に使います",
+        "en": "Your support goes into developing Meltype and more"
+      }
+    }
   ]
 }

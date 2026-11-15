@@ -9,9 +9,10 @@ import { createRateLimiter } from './rate-limit.js'
 import { createStatsStore } from './stats-store.js'
 import { trustedClientIp } from './request-ip.js'
 import { createVisitCounter } from './visit-counter.js'
-import { NOT_FOUND_FILE, fileForPath } from './routes.js'
+import { LINK_CARD_FILE, NOT_FOUND_FILE, fileForPath } from './routes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const CONFIG_FILE = path.join(__dirname, '..', 'src', 'data', 'config.json')
 
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
@@ -273,6 +274,29 @@ async function fetchLastfmDashboard() {
   }
 }
 
+// ---------- Discord ----------
+
+// Invite codes of the discord.gg links in config.json. Discord's public invite
+// API gives a server's member counts without a bot or a token.
+export function discordInviteCodes(links) {
+  return links.flatMap((link) => {
+    const match = /^https:\/\/discord\.gg\/([\w-]+)$/.exec(link.url)
+    return match ? [match[1]] : []
+  })
+}
+
+async function fetchDiscordInvites() {
+  const { links } = JSON.parse(await fs.promises.readFile(CONFIG_FILE, 'utf-8'))
+  const result = {}
+  for (const code of discordInviteCodes(links)) {
+    const res = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true`)
+    if (!res.ok) throw new Error(`Discord invite ${code}: HTTP ${res.status}`)
+    const data = await res.json()
+    result[code] = { members: data.approximate_member_count, online: data.approximate_presence_count }
+  }
+  return result
+}
+
 // ---------- App ----------
 
 const DIST_DIR = path.join(__dirname, '..', 'dist')
@@ -294,6 +318,15 @@ const defaultSources = {
     ttlMs: 2 * 60 * 1000,
     fetch: fetchLastfmDashboard,
   },
+  'discord:invites': {
+    configured: () => true,
+    ttlMs: 10 * 60 * 1000,
+    fetch: fetchDiscordInvites,
+  },
+}
+
+function isLinkHost(hostname) {
+  return Boolean(hostname?.startsWith('link.'))
 }
 
 export function createApp({
@@ -306,6 +339,13 @@ export function createApp({
   statusRateLimit = {},
 } = {}) {
   const app = express()
+
+  // links.ibutya.com is an alias: send it to link.ibutya.com, keeping the path
+  // and query. Before everything else, so the API isn't reachable there either.
+  app.use((req, res, next) => {
+    if (!req.hostname?.startsWith('links.')) return next()
+    res.redirect(301, `https://link.${req.hostname.slice('links.'.length)}${req.originalUrl}`)
+  })
   const lastGood = createLastGoodStore(path.join(dataDir, 'last-good.json'))
   const cached = createCache({ lastGood, now })
   const visits = createVisitCounter({ store: createStatsStore(path.join(dataDir, 'stats.json')), now })
@@ -358,6 +398,7 @@ export function createApp({
   app.get('/api/github/summary', upstreamRoute('github:summary'))
   app.get('/api/github/repos', upstreamRoute('github:repos'))
   app.get('/api/lastfm/dashboard', upstreamRoute('lastfm:dashboard'))
+  app.get('/api/discord/invites', upstreamRoute('discord:invites'))
 
   // ---------- Server status ----------
   // Shared samples (see status.js), so polling visitors don't add load.
@@ -409,7 +450,8 @@ export function createApp({
     })
     app.get(/.*/, async (req, res, next) => {
       try {
-        const file = fileForPath(req.path)
+        // link.ibutya.com is a single page: every path shows the link card.
+        const file = isLinkHost(req.hostname) ? LINK_CARD_FILE : fileForPath(req.path)
         // Read on every request (a few ms at most): a rebuild swaps these
         // files and the assets they name together, so a copy kept in memory
         // would point at files that no longer exist until the next restart.

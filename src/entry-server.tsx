@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { renderToString } from 'react-dom/server'
 import App from './App.tsx'
+import { LinkCard } from './pages/LinkCard'
 import { LanguageProvider } from './components/LanguageProvider'
 import { tabFromPath } from './routes'
 
@@ -20,4 +21,15 @@ export function render(path: string): { html: string; notFound: boolean } {
     </StrictMode>,
   )
   return { html, notFound: tab === null }
+}
+
+/** The link.ibutya.com page (src/pages/LinkCard.tsx), for scripts/prerender.js. */
+export function renderLinkCard(): string {
+  return renderToString(
+    <StrictMode>
+      <LanguageProvider>
+        <LinkCard />
+      </LanguageProvider>
+    </StrictMode>,
+  )
 }
